@@ -1,0 +1,163 @@
+.mod_giportfolio .giportfolio_chapter_title {
+    font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+    text-align: left;
+    font-size: large;
+    font-weight: bold;
+
+    margin-left: 0;
+    margin-bottom: 20px;
+}
+
+.mod_giportfolio img.bigicon {
+    vertical-align: middle;
+    margin-right: 4px;
+    margin-left: 4px;
+    width: 24px;
+    height: 24px;
+    border: 0;
+}
+
+.mod_giportfolio .navtop {
+    text-align: right;
+    margin-bottom: 0.5em;
+}
+
+.mod_giportfolio .navbottom {
+    text-align: right;
+}
+
+/* == Fake toc block == */
+
+.mod_giportfolio .giportfolio_faq {
+    font-size: 0.7em;
+}
+
+/* toc style NONE */
+.mod_giportfolio .giportfolio_toc_none {
+    font-size: 0.8em;
+}
+.mod_giportfolio .giportfolio_toc_none ul {
+    margin-left: 5px;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_none ul ul {
+    margin-left: 0;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_none li {
+    margin-top: 5px;
+    list-style: none;
+}
+.mod_giportfolio .giportfolio_toc_none li li {
+    margin-top: 0;
+    list-style: none;
+}
+
+
+/* toc style NUMBERED */
+.mod_giportfolio .giportfolio_toc_numbered {
+    font-size: 0.8em;
+}
+.mod_giportfolio .giportfolio_toc_numbered ul {
+    margin-left: 5px;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_numbered ul ul {
+    margin-left: 0;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_numbered li {
+    margin-top: 5px;
+    list-style: none;
+}
+.mod_giportfolio .giportfolio_toc_numbered li li {
+    margin-top: 0;
+    list-style: none;
+}
+
+
+/*toc style BULLETS */
+.mod_giportfolio .giportfolio_toc_bullets {
+    font-size: 0.8em;
+}
+.mod_giportfolio .giportfolio_toc_bullets ul {
+    margin-left: 5px;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_bullets ul ul {
+    margin-left: 20px;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_bullets li {
+    margin-top: 5px;
+    list-style: none;
+}
+.mod_giportfolio .giportfolio_toc_bullets li li {
+    margin-top: 0;
+    list-style: circle;
+}
+
+
+/* toc style INDENTED*/
+.mod_giportfolio .giportfolio_toc_indented {
+    font-size: 0.8em;
+}
+.mod_giportfolio .giportfolio_toc_indented ul {
+    margin-left: 5px;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_indented ul ul {
+    margin-left: 15px;
+    padding-left: 0;
+}
+.mod_giportfolio .giportfolio_toc_indented li {
+    margin-top: 5px;
+    list-style: none;
+}
+.mod_giportfolio .giportfolio_toc_indented li li {
+    margin-top: 0;
+    list-style: none;
+}
+
+/* SYNERGY - added YUI element styling */
+#giportfolio-toc .ygtvtp,
+#giportfolio-toc .ygtvtph,
+#giportfolio-toc .ygtvtmh,
+#giportfolio-toc .ygtvtm,
+#giportfolio-toc .ygtvlp,
+#giportfolio-toc .ygtvlph,
+#giportfolio-toc .ygtvlmh,
+#giportfolio-toc .ygtvlm {
+    width: 17px;
+}
+
+.path-mod-giportfolio .late {color: red;}
+
+.mod_giportfolio .block .content .userpicture {
+    width: 50px;
+    height: 50px;
+    margin: 4px;
+}
+
+body#page-mod-giportfolio-viewcontribute.mod_giportfolio #inst5 {
+    display:none;
+}
+
+body#page-mod-giportfolio-addcontribution.mod_giportfolio .generalbox {
+    border: 2px solid;
+    border-color: #37CAF8;
+}
+
+body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
+    border: 2px solid;
+    border-color: #37CAF8;
+}
+
+.path-mod-giportfolio .generalbox ul li {
+    list-style: disc;
+}
+
+.path-mod-giportfolio #region-main .contribwarning {
+    border: 2px #d08080 solid;
+    padding: 5px;
+}
