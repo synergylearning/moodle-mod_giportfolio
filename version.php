@@ -29,4 +29,4 @@ $module->requires  = 2011120500; // Requires this Moodle version.
 $module->cron      = 0;          // Period for cron to check this module (secs).
 $module->component = 'mod_giportfolio'; // Full name of the plugin (used for diagnostics).
 $module->maturity  = MATURITY_STABLE;
-$module->release   = "2.1+ (2013073000)"; // User-friendly version number.
+$module->release   = "2.2+ (2013073000)"; // User-friendly version number.
