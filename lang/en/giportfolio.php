@@ -39,7 +39,6 @@ $string['confchapterdelete'] = 'Do you really want to delete this chapter?';
 $string['confchapterdeleteall'] = 'Do you really want to delete this chapter and all its subchapters?';
 $string['confcontribdelete'] = 'Are you sure that you want to delete this contribution';
 $string['content'] = 'Content';
-$string['contentul'] = 'contentul';
 $string['continuecontrib'] = 'Continue Contributing';
 $string['contribadded'] = 'Contribution added';
 $string['contribaddform'] = 'Add New Contribution ';
