@@ -87,7 +87,6 @@ $string['insertgrade'] = 'Grade Portfolio';
 $string['lastgrade'] = 'Graded ';
 $string['lastupdated'] = 'Last Updated:  ';
 $string['messageprovider:addentry'] = 'Notification of new Portfolio entries';
-$string['missingfilemanagement'] = 'Dear users of portfolio module, I supposed you have already notised that it is not possible to delete or manage files used in portfolio chapters. Please vote in {$a} to get this fixed, thanks. Petr Škoda';
 $string['modulename'] = 'Portfolio';
 $string['modulename_help'] = '<p>The portfolio module allows students to create portfolio contributions, with a structure set by the teacher.</p>
 <p>The course teacher(s) are able to create an overall structure for the students\' work via a series of chapters and subchapters, the same as the layout found in the book module.</p>
