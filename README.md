@@ -14,6 +14,10 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details: http://www.gnu.org/copyleft/gpl.html
 
+Changes:
+
+* 2013-10-21 - Fix install for Moodle version < 2.5.
+
 Usage:
 
 * As a teacher, click on 'View/edit portfolio template', then create each of the chapters that you want students to contribute to

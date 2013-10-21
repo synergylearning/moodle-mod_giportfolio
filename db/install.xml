@@ -4,94 +4,94 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="giportfolio" COMMENT="Defines giportfolio">
+    <TABLE NAME="giportfolio" COMMENT="Defines giportfolio" NEXT="giportfolio_chapters">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="numbering" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customtitles" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="revision" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="collapsesubchapters" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="grade" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="grade"/>
-        <FIELD NAME="printing" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores printing status"/>
-        <FIELD NAME="participantadd" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="particpant can add chapters"/>
-        <FIELD NAME="chapternumber" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores the number of chapters for each giportfolio activity"/>
-        <FIELD NAME="publishnotification" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="send notification on publish"/>
-        <FIELD NAME="notifyaddentry" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Notify teachers when a new entry is created by a student"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="name" PREVIOUS="id"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" NEXT="intro" PREVIOUS="course"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" NEXT="introformat" PREVIOUS="name"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="numbering" PREVIOUS="intro"/>
+        <FIELD NAME="numbering" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="customtitles" PREVIOUS="introformat"/>
+        <FIELD NAME="customtitles" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="revision" PREVIOUS="numbering"/>
+        <FIELD NAME="revision" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="timecreated" PREVIOUS="customtitles"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="timemodified" PREVIOUS="revision"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="collapsesubchapters" PREVIOUS="timecreated"/>
+        <FIELD NAME="collapsesubchapters" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="grade" PREVIOUS="timemodified"/>
+        <FIELD NAME="grade" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="grade" NEXT="printing" PREVIOUS="collapsesubchapters"/>
+        <FIELD NAME="printing" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores printing status" NEXT="participantadd" PREVIOUS="grade"/>
+        <FIELD NAME="participantadd" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="particpant can add chapters" NEXT="chapternumber" PREVIOUS="printing"/>
+        <FIELD NAME="chapternumber" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores the number of chapters for each giportfolio activity" NEXT="publishnotification" PREVIOUS="participantadd"/>
+        <FIELD NAME="publishnotification" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="send notification on publish" NEXT="notifyaddentry" PREVIOUS="chapternumber"/>
+        <FIELD NAME="notifyaddentry" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Notify teachers when a new entry is created by a student" PREVIOUS="publishnotification"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="giportfolio_chapters" COMMENT="Defines giportfolio_chapters">
+    <TABLE NAME="giportfolio_chapters" COMMENT="Defines giportfolio_chapters" NEXT="giportfolio_contributions" PREVIOUS="giportfolio">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="pagenum" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="subchapter" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="hidden" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="importsrc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="giportfolioid"/>
+        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="pagenum" PREVIOUS="id"/>
+        <FIELD NAME="pagenum" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="subchapter" PREVIOUS="giportfolioid"/>
+        <FIELD NAME="subchapter" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="title" PREVIOUS="pagenum"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" NEXT="content" PREVIOUS="subchapter"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" NEXT="contentformat" PREVIOUS="title"/>
+        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="hidden" PREVIOUS="content"/>
+        <FIELD NAME="hidden" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="timecreated" PREVIOUS="contentformat"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="timemodified" PREVIOUS="hidden"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" NEXT="importsrc" PREVIOUS="timecreated"/>
+        <FIELD NAME="importsrc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="timemodified"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="giportfolio_contributions" COMMENT="stores user contributions to giportfolios">
+    <TABLE NAME="giportfolio_contributions" COMMENT="stores user contributions to giportfolios" NEXT="giportfolio_status" PREVIOUS="giportfolio_chapters">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stroes the chapter id"/>
-        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="giportfolioid"/>
-        <FIELD NAME="pagenum" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores pagenum"/>
-        <FIELD NAME="subchapter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores the subchapter"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="stores the title of the contribution"/>
-        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="stores the content of the contribution"/>
-        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="format of the content"/>
-        <FIELD NAME="hidden" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="visibility of the contribution"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="timecreated"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="timemodified"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores the contributor id"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="chapterid"/>
+        <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stroes the chapter id" NEXT="giportfolioid" PREVIOUS="id"/>
+        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="giportfolioid" NEXT="pagenum" PREVIOUS="chapterid"/>
+        <FIELD NAME="pagenum" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores pagenum" NEXT="subchapter" PREVIOUS="giportfolioid"/>
+        <FIELD NAME="subchapter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores the subchapter" NEXT="title" PREVIOUS="pagenum"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="stores the title of the contribution" NEXT="content" PREVIOUS="subchapter"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="stores the content of the contribution" NEXT="contentformat" PREVIOUS="title"/>
+        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="format of the content" NEXT="hidden" PREVIOUS="content"/>
+        <FIELD NAME="hidden" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="visibility of the contribution" NEXT="timecreated" PREVIOUS="contentformat"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="timecreated" NEXT="timemodified" PREVIOUS="hidden"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="timemodified" NEXT="userid" PREVIOUS="timecreated"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores the contributor id" PREVIOUS="timemodified"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="giportfolio_status" COMMENT="stores the publish status for student giportfolio">
+    <TABLE NAME="giportfolio_status" COMMENT="stores the publish status for student giportfolio" NEXT="giportfolio_userchapters" PREVIOUS="giportfolio_contributions">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores activity id"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores userid"/>
-        <FIELD NAME="status" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="publish status"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="timecreated"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="publish status update"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="giportfolioid"/>
+        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores activity id" NEXT="userid" PREVIOUS="id"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores userid" NEXT="status" PREVIOUS="giportfolioid"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="publish status" NEXT="timecreated" PREVIOUS="userid"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="timecreated" NEXT="timemodified" PREVIOUS="status"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="publish status update" PREVIOUS="timecreated"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="giportfolio_userchapters" COMMENT="stores user chapters">
+    <TABLE NAME="giportfolio_userchapters" COMMENT="stores user chapters" PREVIOUS="giportfolio_status">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="giportfolioid"/>
-        <FIELD NAME="pagenum" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="pagenum"/>
-        <FIELD NAME="subchapter" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="subchapter"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title"/>
-        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="content"/>
-        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="contentformat"/>
-        <FIELD NAME="hidden" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="hidden"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="timecreated"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="timemodified"/>
-        <FIELD NAME="importsrc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="importsrc"/>
-        <FIELD NAME="iduser" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the user who generated the chapter"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="giportfolioid"/>
+        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="giportfolioid" NEXT="pagenum" PREVIOUS="id"/>
+        <FIELD NAME="pagenum" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="pagenum" NEXT="subchapter" PREVIOUS="giportfolioid"/>
+        <FIELD NAME="subchapter" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="subchapter" NEXT="title" PREVIOUS="pagenum"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title" NEXT="content" PREVIOUS="subchapter"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="content" NEXT="contentformat" PREVIOUS="title"/>
+        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="contentformat" NEXT="hidden" PREVIOUS="content"/>
+        <FIELD NAME="hidden" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="hidden" NEXT="timecreated" PREVIOUS="contentformat"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="timecreated" NEXT="timemodified" PREVIOUS="hidden"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="timemodified" NEXT="importsrc" PREVIOUS="timecreated"/>
+        <FIELD NAME="importsrc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="importsrc" NEXT="iduser" PREVIOUS="timemodified"/>
+        <FIELD NAME="iduser" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the user who generated the chapter" PREVIOUS="importsrc"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
