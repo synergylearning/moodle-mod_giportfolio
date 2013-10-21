@@ -68,7 +68,12 @@ $tabs = array(
 
 echo get_string('studentgiportfolios', 'mod_giportfolio');
 echo '</br>';
-echo $OUTPUT->tabtree($tabs, $currenttab);
+if ($CFG->version > 2013051400) {
+    echo $OUTPUT->tabtree($tabs, $currenttab);
+} else {
+    $tabs = array($tabs);
+    echo print_tabs($tabs, $currenttab, array(), array(), true);
+}
 echo get_string('filterlist', 'mod_giportfolio');
 
 $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
