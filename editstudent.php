@@ -40,7 +40,6 @@ $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*',
 require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
-require_capability('mod/giportfolio:edit', $context);
 
 $PAGE->set_url('/mod/giportfolio/editstudent.php', array(
                                                         'cmid' => $cmid, 'id' => $chapterid, 'pagenum' => $pagenum,
@@ -49,8 +48,11 @@ $PAGE->set_url('/mod/giportfolio/editstudent.php', array(
 $PAGE->set_pagelayout('admin'); // This is a bloody hack!
 
 $allowuser = giportfolio_get_collaborative_status($giportfolio);
-
-if ($allowuser) {
+if (!$allowuser) {
+    require_capability('mod/giportfolio:edit', $context);
+} else {
+    require_capability('mod/giportfolio:view', $context);
+}
 
     if ($chapterid) {
         $chapter = $DB->get_record('giportfolio_userchapters', array(
@@ -123,7 +125,6 @@ if ($allowuser) {
     echo $OUTPUT->heading(get_string('editinguserchapter', 'mod_giportfolio'));
 
     $mform->display();
-}
 
 echo $OUTPUT->footer();
 
