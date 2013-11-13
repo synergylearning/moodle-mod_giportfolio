@@ -16,6 +16,7 @@ GNU General Public License for more details: http://www.gnu.org/copyleft/gpl.htm
 
 Changes:
 
+* 2013-11-13 - Global setting to display 'contribution count' on the course page (off by default)
 * 2013-10-21 - Fix install for Moodle version < 2.5.
 
 Usage:

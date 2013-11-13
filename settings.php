@@ -39,6 +39,9 @@ if ($ADMIN->fulltree) {
         get_string('numberingoptions', 'mod_giportfolio'), get_string('numberingoptions_help', 'mod_giportfolio'),
         array_keys($options), $options));
 
+    $settings->add(new admin_setting_configcheckbox('giportfolio/contributioncount',
+                   get_string('contributioncount', 'mod_giportfolio'), get_string('contributioncount_desc', 'mod_giportfolio'), 0));
+
 
     // Modedit defaults.
     $settings->add(new admin_setting_heading('giportfoliomodeditdefaults', get_string('modeditdefaults', 'admin'),

@@ -809,3 +809,23 @@ function mod_giportfolio_comment_permissions($opts) {
 
     return array('view' => $viewcap, 'post' => $postcap);
 }
+
+function mod_giportfolio_cm_info_view(cm_info $cm) {
+    global $USER, $DB;
+
+    static $enabled = null;
+    if ($enabled === null) {
+        $enabled = get_config('giportfolio', 'contributioncount');
+    }
+    if (!$enabled) {
+        return;
+    }
+    if (!has_capability('mod/giportfolio:submitportfolio', context_module::instance($cm->id))) {
+        return;
+    }
+
+    $count = $DB->count_records('giportfolio_contributions', array('giportfolioid' => $cm->instance, 'userid' => $USER->id));
+    $count = get_string('contributions', 'mod_giportfolio').' '.html_writer::tag('span', $count, array('class' => 'count-inner'));
+    $count = html_writer::tag('span', $count, array('class' => 'giportfolio-count'));
+    $cm->set_after_link($count);
+}

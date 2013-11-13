@@ -161,3 +161,9 @@ body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
     border: 2px #d08080 solid;
     padding: 5px;
 }
+
+.path-course-view .giportfolio-count {
+    background: #9ebeff;
+    margin-left: 3em;
+    padding: 2px;
+}
