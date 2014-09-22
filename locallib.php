@@ -272,6 +272,9 @@ function giportfolio_log($str1, $str2, $level = 0) {
 
 function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $userdit) {
     global $OUTPUT, $PAGE, $USER, $COURSE;
+	
+	$context = context_module::instance($cm->id);
+	$allowreport = has_capability('report/outline:view', $context);
 
     if (giportfolio_get_collaborative_status($giportfolio) && !$edit) {
         $toc = giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $USER->id, $userdit);
@@ -289,10 +292,11 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
     $bc->title = get_string('toc', 'mod_giportfolio');
     $bc->attributes['class'] = 'block';
     $bc->content = $toc;
-    $bc->content .= $OUTPUT->single_button(new moodle_url('/report/outline/user.php',
-                                                          array('id' => $USER->id, 'course' => $COURSE->id, 'mode' => 'outline')),
-                                           get_string('courseoverview', 'mod_giportfolio'), '', array());
-
+	if ($allowreport) {
+		$bc->content .= $OUTPUT->single_button(new moodle_url('/report/outline/user.php',
+													  array('id' => $USER->id, 'course' => $COURSE->id, 'mode' => 'outline')),
+									   get_string('courseoverview', 'mod_giportfolio'), '', array());
+	}
     $regions = $PAGE->blocks->get_regions();
     $firstregion = reset($regions);
     $PAGE->blocks->add_fake_block($bc, $firstregion);
