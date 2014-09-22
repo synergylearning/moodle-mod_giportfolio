@@ -61,6 +61,7 @@ require_capability('mod/giportfolio:view', $context);
 
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
+$allowreport = has_capability('report/outline:view', $context);
 
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
@@ -136,9 +137,11 @@ if ($allowedit) {
         echo '</br>';
         echo $OUTPUT->single_button(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)),
                                     get_string('continuecontrib', 'mod_giportfolio'), '', array());
-        echo $OUTPUT->single_button(new moodle_url('/report/outline/user.php',
+		if ($allowreport) {
+			echo $OUTPUT->single_button(new moodle_url('/report/outline/user.php',
                                                    array('id' => $USER->id, 'course' => $course->id, 'mode' => 'outline')),
                                     get_string('courseoverview', 'mod_giportfolio'), '', array());
+		}
         echo '</br>';
         echo get_string('lastupdated', 'mod_giportfolio').date('l jS \of F Y h:i:s A', $usercontribution);
         echo '</br>';
