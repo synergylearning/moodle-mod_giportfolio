@@ -452,7 +452,7 @@ function giportfolio_supports($feature) {
         case FEATURE_ADVANCED_GRADING:
             return true;
         case FEATURE_COMPLETION_HAS_RULES:
-            return true;
+            return false;
 
         default:
             return null;
