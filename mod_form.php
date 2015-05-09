@@ -46,7 +46,12 @@ class mod_giportfolio_mod_form extends moodleform_mod {
             $mform->setType('name', PARAM_CLEANHTML);
         }
         $mform->addRule('name', null, 'required', null, 'client');
-        $this->add_intro_editor($config->requiremodintro, get_string('summary'));
+
+        if ($CFG->branch < 29) {
+            $this->add_intro_editor($config->requiremodintro, get_string('summary'));
+        } else {
+            $this->standard_intro_elements(get_string('summary'));
+        }
 
         $alloptions = giportfolio_get_numbering_types();
         $allowed = explode(',', $config->numberingoptions);

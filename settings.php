@@ -30,8 +30,10 @@ if ($ADMIN->fulltree) {
 
     // General settings.
 
-    $settings->add(new admin_setting_configcheckbox('giportfolio/requiremodintro',
-        get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 1));
+    if ($CFG->branch < 29) {
+        $settings->add(new admin_setting_configcheckbox('giportfolio/requiremodintro',
+                       get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 1));
+    }
 
     $options = giportfolio_get_numbering_types();
 
