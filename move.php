@@ -40,9 +40,10 @@ require_sesskey();
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:edit', $context);
 
-$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id), '*', MUST_EXIST);
+$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id, 'userid' => 0),
+                           '*', MUST_EXIST);
 
-$oldchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id),
+$oldchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0),
                                 'pagenum', 'id, pagenum, subchapter');
 
 $nothing = 0;
@@ -174,13 +175,12 @@ if (!$nothing) {
     foreach ($newchapters as $ch) {
         $ch->pagenum = $i;
         $DB->update_record('giportfolio_chapters', $ch);
+
+        \mod_giportfolio\event\chapter_updated::create_from_chapter($giportfolio, $context, $ch)->trigger();
+
         $i++;
     }
 }
-
-add_to_log($course->id, 'course', 'update mod', '../mod/giportfolio/viewgiportfolio.php?id='.$cm->id,
-           'giportfolio '.$giportfolio->id);
-add_to_log($course->id, 'giportfolio', 'update', 'viewgiportfolio.php?id='.$cm->id, $giportfolio->id, $cm->id);
 
 giportfolio_preload_chapters($giportfolio); // Fix structure.
 $DB->set_field('giportfolio', 'revision', $giportfolio->revision + 1, array('id' => $giportfolio->id));

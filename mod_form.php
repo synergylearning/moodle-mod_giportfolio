@@ -83,6 +83,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         // SYNERGY - add collapsesubchapters option to settings.
         $mform->addElement('selectyesno', 'collapsesubchapters', get_string('collapsesubchapters', 'giportfolio'));
         $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'giportfolio'));
+        $mform->setDefault('participantadd', 1);
 
         $mform->addElement('text', 'chapternumber', get_string('chapternumberinit', 'giportfolio'), 'Required');
         $mform->addRule('chapternumber', 'Required', 'required', null, 'client');
@@ -98,11 +99,39 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
         $mform->setDefault('newentrynotification', 0);
 
+        $mform->addElement('selectyesno', 'automaticgrading', get_string('automaticgrading', 'giportfolio'));
+        $mform->setDefault('automaticgrading', 0);
+
+        $mform->addElement('selectyesno', 'skipintro', get_string('skipintro', 'giportfolio'));
+        $mform->setDefault('skipintro', 0);
+
+        $mform->addElement('selectyesno', 'myactivitylink', get_string('myactivitylink', 'giportfolio'));
+        $mform->setDefault('myactivitylink', 1);
+
+        if (giportfolio_include_klassenbuchtrainer()) {
+            $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));
+            $mform->addHelpButton('klassenbuchtrainer', 'klassenbuchtrainer', 'mod_giportfolio');
+            $mform->setDefault('klassenbuchtrainer', 0);
+        } else {
+            $mform->addElement('hidden', 'klassenbuchtrainer', 0);
+            $mform->setType('klassenbuchtrainer', 0);
+        }
+
         $this->standard_grading_coursemodule_elements();
 
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
+    }
+
+    function definition_after_data() {
+        parent::definition_after_data();
+
+        $mform = $this->_form;
+        if ($id = $mform->getElementValue('update')) {
+            // Do not allow the 'klassenbuchtrainer' field to change after the portfolio has been created.
+            $mform->hardFreeze('klassenbuchtrainer');
+        }
     }
 
 }

@@ -49,7 +49,7 @@ $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add($strgiportfolios);
 echo $OUTPUT->header();
 
-add_to_log($course->id, 'giportfolio', 'view all', 'index.php?id='.$course->id, '');
+\mod_giportfolio\event\course_module_instance_list_viewed::create_from_course($course)->trigger();
 
 // Get all the appropriate data.
 if (!$giportfolios = get_all_instances_in_course('giportfolio', $course)) {

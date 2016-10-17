@@ -89,6 +89,7 @@ function giportfolio_add_instance($giportfolio, $mform) {
             $initchapter->timecreated = time();
             $initchapter->timemodified = time();
             $initchapter->importsrc = '';
+            $initchapter->userid = 0;
             $DB->insert_record('giportfolio_chapters', $initchapter);
         }
     }
@@ -108,6 +109,10 @@ function giportfolio_update_instance($data, $mform) {
     global $DB;
 
     $data->timemodified = time();
+
+    $regrade = $data->automaticgrading
+        && $data->chapternumber != $DB->get_field('giportfolio', 'chapternumber', array('id' => $data->instance));
+
     $data->id = $data->instance;
     if (!isset($data->customtitles)) {
         $data->customtitles = 0;
@@ -125,6 +130,10 @@ function giportfolio_update_instance($data, $mform) {
     $giportfolio = $DB->get_record('giportfolio', array('id' => $data->id));
     $DB->set_field('giportfolio', 'revision', $giportfolio->revision + 1, array('id' => $giportfolio->id));
 
+    if ($regrade) {
+        giportfolio_regrade($giportfolio);
+    }
+
     return true;
 }
 
@@ -138,21 +147,32 @@ function giportfolio_update_instance($data, $mform) {
  * @return bool success
  */
 function giportfolio_delete_instance($id) {
-    global $DB;
+    global $DB, $CFG;
 
     if (!$giportfolio = $DB->get_record('giportfolio', array('id' => $id))) {
         return false;
     }
 
+    // Delete grade item.
     giportfolio_grade_item_delete($giportfolio);
 
     $DB->delete_records('giportfolio_contributions', array('giportfolioid' => $giportfolio->id));
     $DB->delete_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id));
-    $DB->delete_records('giportfolio_userchapters', array('giportfolioid' => $giportfolio->id));
     $DB->delete_records('giportfolio', array('id' => $giportfolio->id));
-    // TODO delete contributions and userchapters.
-    // Delete grade item.
 
+    if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()) {
+        klassenbuchtool_lernschritte_delete_instance($giportfolio, 'giportfolio');
+    }
+
+    return true;
+}
+
+function giportfolio_include_klassenbuchtrainer() {
+    global $CFG;
+    if (!file_exists($CFG->dirroot.'/mod/klassenbuch/tool/lernschritte/lib.php')) {
+        return false;
+    }
+    require_once($CFG->dirroot.'/mod/klassenbuch/tool/lernschritte/lib.php');
     return true;
 }
 
@@ -208,6 +228,15 @@ function giportfolio_user_complete($course, $user, $mod, $giportfolio) {
  */
 function giportfolio_print_recent_activity($course, $isteacher, $timestart) {
     return false; // True if anything was printed, otherwise false.
+}
+
+function giportfolio_regrade($instance) {
+    global $DB;
+    $contributors = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {giportfolio_contributions} WHERE giportfolioid = ?',
+            array('id' => $instance->id));
+    foreach ($contributors as $userid) {
+        giportfolio_automatic_grading($instance, $userid);
+    }
 }
 
 /**
@@ -437,8 +466,6 @@ function giportfolio_supports($feature) {
             return true;
         case FEATURE_GROUPINGS:
             return true;
-        case FEATURE_GROUPMEMBERSONLY:
-            return true;
         case FEATURE_MOD_INTRO:
             return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
@@ -504,13 +531,24 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     if (!empty($params['id']) && !empty($params['chapterid']) && !$allowedit &&
         giportfolio_get_user_contribution_status($giportfolio->id, $USER->id)) {
 
-        $url = new moodle_url('/mod/giportfolio/tool/print/pdfgiportfolio.php', array(
-                                                                                     'id' => $params['id'], 'sesskey' => sesskey()
-                                                                                )); // Add pdf export link.
-        // Open as new window.
-        $action = new action_link($url, get_string('exportpdf', 'mod_giportfolio'), new popup_action('click', $url));
-        $giportfolionode->add(get_string('exportpdf', 'mod_giportfolio'), $action, navigation_node::TYPE_SETTING, null, null,
-                              new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon')));
+        if (!$giportfolio->klassenbuchtrainer) {
+            $url = new moodle_url('/mod/giportfolio/tool/print/pdfgiportfolio.php', array(
+                'id' => $params['id'], 'sesskey' => sesskey()
+            )); // Add pdf export link.
+            // Open as new window.
+            $action = new action_link($url, get_string('exportpdf', 'mod_giportfolio'), new popup_action('click', $url));
+            $giportfolionode->add(get_string('exportpdf', 'mod_giportfolio'), $action, navigation_node::TYPE_SETTING, null, null,
+                                  new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon')));
+
+            // SYNERGY LEARNING - Export as zip option.
+            $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array(
+                'id' => $params['id']
+            )); // Add zip export link.
+            $giportfolionode->add(get_string('exportzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null,
+                                  new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
+            // END SYNERGY LEARNING - Export as zip option.
+        }
+
     }
 
     // Turn student editing on.
@@ -568,7 +606,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
  * @return string image string or nothing depending on $type param
  */
 function giportfolio_print_attachments($contribution, $cm, $type = null, $align = "right") {
-    global $CFG, $OUTPUT;
+    global $OUTPUT;
 
     if (!$context = context_module::instance($cm->id)) {
         return '';
@@ -579,13 +617,14 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
     $fs = get_file_storage();
 
     $output = '';
+    /** @var stored_file[] $files */
     if ($files = $fs->get_area_files($filecontext->id, 'mod_giportfolio', 'attachment', $contribution->id, "timemodified", false)) {
         foreach ($files as $file) {
             $filename = $file->get_filename();
             $mimetype = $file->get_mimetype();
             $iconimage = '<img src="'.$OUTPUT->pix_url(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
-            $path = moodle_url::make_pluginfile_url($context->id, 'mod_giportfolio', 'attachment',
-                                                    $contribution->id, '/', $filename);
+            $path = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
+                                                    $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 
             if ($type == 'html') {
                 $output .= "<a href=\"$path\">$iconimage</a> ";
@@ -688,7 +727,7 @@ function giportfolio_get_file_info($browser, $areas, $course, $cm, $context, $fi
  * @return bool false if file not found, does not return if found - just send the file
  */
 function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
-    global $DB;
+    global $DB, $USER;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
@@ -709,13 +748,13 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
     if (!$giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance))) {
         return false;
     }
-    // SYNERGY check if chapter is also in user chapters tabel.
+    // SYNERGY check if chapter is also in user chapters table.
     if ($filearea === 'chapter') {
         if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chid, 'giportfolioid' => $giportfolio->id))) {
-            if (!$chapter = $DB->get_record('giportfolio_userchapters', array(
-                                                                             'id' => $chid, 'giportfolioid' => $giportfolio->id
-                                                                        ))
-            ) {
+            return false;
+        }
+        if ($chapter->userid && $chapter->userid != $USER->id) {
+            if (!has_capability('mod/giportfolio:viewgiportfolios', $context)) {
                 return false;
             }
         }
@@ -727,6 +766,22 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
                                                                           ))
         ) {
             return false;
+        }
+        if ($contribution->userid != $USER->id) {
+            // The contribution belongs to another user.
+            if (!$contribution->shared && !has_capability('mod/giportfolio:viewgiportfolios', $context)) {
+                // The contribution has not been shared and the viewing user does not have permission to view portfolios.
+                return false;
+            }
+        }
+        if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $contribution->chapterid,
+                                                                      'giportfolioid' => $giportfolio->id))) {
+            return false;
+        }
+        if ($chapter->userid && $chapter->userid != $USER->id) {
+            if (!has_capability('mod/giportfolio:viewgiportfolios', $context)) {
+                return false;
+            }
         }
     }
 
@@ -791,6 +846,24 @@ function mod_giportfolio_comment_validate($opts) {
     }
 
     return true;
+}
+
+function giportfolio_automatic_grading($giportfolio, $userid) {
+    if ($giportfolio->automaticgrading) {
+        global $DB;
+        $sql = "SELECT COUNT(id) FROM {giportfolio_chapters} WHERE giportfolioid = ?";
+        $chapters = $DB->get_field_sql($sql, array($giportfolio->id));
+        $sql = "SELECT COUNT(DISTINCT chapterid) FROM {giportfolio_contributions} WHERE userid=? AND giportfolioid=?";
+        $params = array($userid, $giportfolio->id);
+        $complete = $DB->get_field_sql($sql, $params);
+
+        $progress = $complete / $chapters * 100;
+        $grade = array(
+                        'userid' => $userid,
+                        'rawgrade' => $progress,
+        );
+        giportfolio_grade_item_update($giportfolio, $grade);
+    }
 }
 
 function mod_giportfolio_comment_permissions($opts) {

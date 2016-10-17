@@ -38,57 +38,38 @@ class backup_giportfolio_activity_structure_step extends backup_activity_structu
         $giportfolio = new backup_nested_element('giportfolio', array('id'),
                                                  array('name', 'intro', 'introformat', 'numbering', 'customtitles',
                                                       'timecreated', 'timemodified', 'collapsesubchapters', 'grade', 'printing',
-                                                      'participantadd', 'chapternumber', 'publishnotification'));
+                                                      'participantadd', 'chapternumber', 'publishnotification', 'notifyaddentry',
+                                                      'automaticgrading', 'skipintro', 'myactivitylink'));
         $chapters = new backup_nested_element('chapters');
         $chapter = new backup_nested_element('chapter', array('id'),
                                              array('pagenum', 'subchapter', 'title', 'content', 'contentformat', 'hidden',
-                                                  'timemcreated', 'timemodified', 'importsrc'));
-
-        $userchapters = new backup_nested_element('userchapters');
-        $userchapter = new backup_nested_element('userchapter', array('id'),
-                                                 array('pagenum', 'subchapter', 'title', 'content', 'contentformat', 'hidden',
-                                                      'timemcreated', 'timemodified', 'importsrc', 'iduser'));
+                                                  'timemcreated', 'timemodified', 'importsrc', 'userid'));
 
         $contributions = new backup_nested_element('contributions');
         $contribution = new backup_nested_element('contribution', array('id'),
                                                   array('chapterid', 'pagenum', 'subchapter', 'title', 'content', 'contentformat',
                                                        'hidden', 'timemcreated', 'timemodified', 'importsrc', 'userid'));
 
-        $ucontributions = new backup_nested_element('ucontributions');
-        $ucontribution = new backup_nested_element('ucontribution', array('id'),
-                                                   array( 'chapterid', 'pagenum', 'subchapter', 'title', 'content', 'contentformat',
-                                                        'hidden', 'timemcreated', 'timemodified', 'importsrc', 'userid'));
-
         $giportfolio->add_child($chapters);
-        $giportfolio->add_child($userchapters);
 
         $chapters->add_child($chapter);
-        $userchapters->add_child($userchapter);
 
         $chapter->add_child($contributions);
         $contributions->add_child($contribution);
-
-        $userchapter->add_child($ucontributions);
-        $ucontributions->add_child($ucontribution);
 
         // Define sources.
         $giportfolio->set_source_table('giportfolio', array('id' => backup::VAR_ACTIVITYID));
         $chapter->set_source_table('giportfolio_chapters', array('giportfolioid' => backup::VAR_PARENTID));
         if ($userinfo) {
-            $userchapter->set_source_table('giportfolio_userchapters', array('giportfolioid' => backup::VAR_PARENTID));
             $contribution->set_source_table('giportfolio_contributions', array('chapterid' => backup::VAR_PARENTID));
-            $ucontribution->set_source_table('giportfolio_contributions', array('chapterid' => backup::VAR_PARENTID));
         }
 
         // Define file annotations.
         $giportfolio->annotate_files('mod_giportfolio', 'intro', null); // This file area hasn't itemid.
         $chapter->annotate_files('mod_giportfolio', 'chapter', 'id');
-        $userchapter->annotate_files('mod_giportfolio', 'chapter', 'id');
         $contribution->annotate_files('mod_giportfolio', 'contribution', 'id');
-        $ucontribution->annotate_files('mod_giportfolio', 'contribution', 'id');
 
         $contribution->annotate_files('mod_giportfolio', 'attachment', 'id');
-        $ucontribution->annotate_files('mod_giportfolio', 'attachment', 'id');
 
         // Return the root element (giportfolio), wrapped into standard activity structure.
         return $this->prepare_activity_structure($giportfolio);

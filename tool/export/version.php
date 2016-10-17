@@ -1,5 +1,5 @@
 <?php
-// This file is part of giportfolio module for Moodle - http://moodle.org/
+// This file is part of giportfolio plugin for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,17 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Definition of log events
+ * giportfolio print plugin version info
  *
- * @package    mod_giportfolio
- * @copyright  2012 Synergy Learning / Manolescu Dorel (based on book module)
+ * @package    giportfoliotool_export
+ * @copyright  2015 Synergy Learning
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$logs = array(
-    array('module' => 'giportfolio', 'action' => 'update', 'mtable' => 'giportfolio', 'field' => 'name'),
-    array('module' => 'giportfolio', 'action' => 'view', 'mtable' => 'giportfolio', 'field' => 'name'),
-    array('module' => 'giportfolio', 'action' => 'view all', 'mtable' => 'giportfolio', 'field' => 'name'),
-);
+$plugin->version   = 2015050100; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2013051409; // Requires this Moodle version.
+$plugin->cron      = 0;          // Persion for cron to check this module (secs).
+$plugin->component = 'giportfoliotool_export'; // Full name of the plugin (used for diagnostics).
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = 'v2.2+ (2015050100)'; // User-friendly version number.

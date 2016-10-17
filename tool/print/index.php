@@ -44,16 +44,14 @@ require_capability('mod/giportfolio:view', $context);
 require_capability('giportfoliotool/print:print', $context);
 
 // Check all variables.
-if ($chapterid && !giportfolio_check_user_chapter($giportfolio->id, $chapterid, $USER->id)) {
+if ($chapterid) {
     // Single chapter printing - only visible!
     $chapter = $DB->get_record('giportfolio_chapters', array(
                                                             'id' => $chapterid, 'giportfolioid' => $giportfolio->id
                                                        ), '*', MUST_EXIST);
-} else if ($chapterid && giportfolio_check_user_chapter($giportfolio->id, $chapterid, $USER->id)) {
-    $chapter = $DB->get_record('giportfolio_userchapters', array(
-                                                                'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                                'iduser' => $USER->id
-                                                           ), '*', MUST_EXIST);
+    if ($chapter->userid && !$chapter->userid == $USER->id) {
+        throw new moodle_exception('notyourchapter', 'mod_giportfolio');
+    }
 } else {
     // Complete giportfolio.
     $chapter = false;
@@ -69,7 +67,7 @@ unset($chapterid);
 // Read chapters.
 $chapters = giportfolio_preload_chapters($giportfolio);
 
-$additionalchapters = giportfolio_preload_userchapters($giportfolio, $userid = null);
+$additionalchapters = giportfolio_preload_userchapters($giportfolio);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
@@ -89,9 +87,7 @@ if ($chapter) {
     if ($chapter->hidden) {
         require_capability('mod/giportfolio:viewhiddenchapters', $context);
     }
-
-    add_to_log($course->id, 'giportfolio', 'print', 'tool/print/index.php?id='.$cm->id.'&chapterid='.$chapter->id,
-               $giportfolio->id, $cm->id);
+    \giportfoliotool_print\event\chapter_printed::create_from_chapter($giportfolio, $context, $chapter)->trigger();
 
     // Page header.
     ?>
@@ -143,15 +139,19 @@ if ($chapter) {
     echo '</body> </html>';
 
 } else {
-    add_to_log($course->id, 'giportfolio', 'print', 'tool/print/index.php?id='.$cm->id, $giportfolio->id, $cm->id);
-    $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id), 'pagenum');
+    $params = array(
+        'context' => $context,
+        'objectid' => $giportfolio->id
+    );
+    \giportfoliotool_print\event\giportfolio_printed::create($params)->trigger();
 
-    $alluserchapters = $DB->get_records('giportfolio_userchapters', array(
-                                                                         'giportfolioid' => $giportfolio->id, 'iduser' => $USER->id
-                                                                    ), 'pagenum');
+    $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
+    $alluserchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
+                                        'pagenum');
     if ($alluserchapters) {
         $allchapters = $alluserchapters + $allchapters;
     }
+
     // Page header.
     ?>
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">

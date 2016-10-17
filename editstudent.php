@@ -55,10 +55,8 @@ if (!$allowuser) {
 }
 
     if ($chapterid) {
-        $chapter = $DB->get_record('giportfolio_userchapters', array(
-                                                                    'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                                    'iduser' => $USER->id
-                                                               ), '*', MUST_EXIST);
+        $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
+                                                                 'userid' => $USER->id), '*', MUST_EXIST);
     } else {
         $chapter = new stdClass();
         $chapter->id = null;
@@ -70,8 +68,7 @@ if (!$allowuser) {
     $options = array('noclean' => true, 'subdirs' => true, 'maxfiles' => -1, 'maxbytes' => 0, 'context' => $context);
     $chapter = file_prepare_standard_editor($chapter, 'content', $options, $context, 'mod_giportfolio', 'chapter', $chapter->id);
 
-    $mform = new giportfolio_chapter_editstudent_form(null, array('chapter' => $chapter, 'options' => $options,
-                                                                 'iduser' => $USER->id));
+    $mform = new giportfolio_chapter_editstudent_form(null, array('chapter' => $chapter, 'options' => $options));
 
     // If data submitted, then process and store.
     if ($mform->is_cancelled()) {
@@ -86,7 +83,7 @@ if (!$allowuser) {
         if ($data->id) {
             // Store the files.
             $data = file_postupdate_standard_editor($data, 'content', $options, $context, 'mod_giportfolio', 'chapter', $data->id);
-            $DB->update_record('giportfolio_userchapters', $data);
+            $DB->update_record('giportfolio_chapters', $data);
 
         } else {
             // Adding new chapter.
@@ -97,22 +94,22 @@ if (!$allowuser) {
             $data->importsrc = '';
             $data->content = ''; // Updated later.
             $data->contentformat = FORMAT_HTML; // Updated later.
-            $data->iduser = $USER->id;
+            $data->userid = $USER->id;
 
             // Make room for new page.
-            $sql = "UPDATE {giportfolio_userchapters}
+            $sql = "UPDATE {giportfolio_chapters}
                    SET pagenum = pagenum + 1
-                 WHERE giportfolioid = ? AND pagenum >= ? AND iduser = ? ";
-            $DB->execute($sql, array($giportfolio->id, $data->pagenum, $data->iduser));
+                 WHERE giportfolioid = ? AND pagenum >= ? AND userid = ? ";
+            $DB->execute($sql, array($giportfolio->id, $data->pagenum, $data->userid));
 
-            $data->id = $DB->insert_record('giportfolio_userchapters', $data);
+            $data->id = $DB->insert_record('giportfolio_chapters', $data);
 
             // Store the files.
             $data = file_postupdate_standard_editor($data, 'content', $options, $context, 'mod_giportfolio', 'chapter', $data->id);
-            $DB->update_record('giportfolio_userchapters', $data);
+            $DB->update_record('giportfolio_chapters', $data);
         }
 
-        giportfolio_preload_userchapters($giportfolio, null); // Fix structure.
+        giportfolio_preload_userchapters($giportfolio); // Fix structure.
         redirect("viewgiportfolio.php?id=$cm->id&chapterid=$data->id&useredit=1");
     }
 
@@ -122,7 +119,7 @@ if (!$allowuser) {
     $PAGE->set_heading(format_string($course->fullname));
 
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('editinguserchapter', 'mod_giportfolio'));
+    echo $OUTPUT->heading(format_string($giportfolio->name));
 
     $mform->display();
 

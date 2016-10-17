@@ -41,7 +41,8 @@ require_capability('mod/giportfolio:edit', $context);
 
 $PAGE->set_url('/mod/giportfolio/show.php', array('id' => $id, 'chapterid' => $chapterid));
 
-$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id), '*', MUST_EXIST);
+$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id, 'userid' => 0),
+                           '*', MUST_EXIST);
 
 // Switch hidden state.
 $chapter->hidden = $chapter->hidden ? 0 : 1;
@@ -51,7 +52,7 @@ $DB->update_record('giportfolio_chapters', $chapter);
 
 // Change visibility of subchapters too.
 if (!$chapter->subchapter) {
-    $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id),
+    $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0),
                                  'pagenum', 'id, subchapter, hidden');
     $found = 0;
     foreach ($chapters as $ch) {
@@ -66,9 +67,7 @@ if (!$chapter->subchapter) {
     }
 }
 
-add_to_log($course->id, 'course', 'update mod', '../mod/giportfolio/viewgiportfolio.php?id='.$cm->id,
-           'giportfolio '.$giportfolio->id);
-add_to_log($course->id, 'giportfolio', 'update', 'viewgiportfolio.php?id='.$cm->id, $giportfolio->id, $cm->id);
+\mod_giportfolio\event\chapter_updated::create_from_chapter($giportfolio, $context, $chapter)->trigger();
 
 giportfolio_preload_chapters($giportfolio); // Fix structure.
 $DB->set_field('giportfolio', 'revision', $giportfolio->revision + 1, array('id' => $giportfolio->id));

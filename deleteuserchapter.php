@@ -41,10 +41,8 @@ $context = context_module::instance($cm->id);
 
 $PAGE->set_url('/mod/giportfolio/deleteuserchapter.php', array('id' => $id, 'chapterid' => $chapterid));
 
-$chapter = $DB->get_record('giportfolio_userchapters', array(
-                                                            'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                            'iduser' => $USER->id
-                                                       ), '*', MUST_EXIST);
+$chapter = $DB->get_record('giportfolio_chapters', array( 'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
+                                                          'userid' => $USER->id ), '*', MUST_EXIST);
 
 // Header and strings.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -55,7 +53,7 @@ $PAGE->set_heading(format_string($course->fullname));
 if ($confirm) { // The operation was confirmed.
     $fs = get_file_storage();
     if (!$chapter->subchapter) { // Delete all its subchapters if any.
-        $chapters = $DB->get_records('giportfolio_userchapters', array('giportfolioid' => $giportfolio->id),
+        $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
                                      'pagenum', 'id, subchapter');
         $found = false;
         foreach ($chapters as $ch) {
@@ -64,7 +62,7 @@ if ($confirm) { // The operation was confirmed.
             } else if ($found and $ch->subchapter) {
                 // Here I should delete contributions first.
                 giportfolio_delete_user_contributions($ch->id, $USER->id, $giportfolio->id);
-                $DB->delete_records('giportfolio_userchapters', array('id' => $ch->id, 'iduser' => $USER->id));
+                $DB->delete_records('giportfolio_chapters', array('id' => $ch->id, 'userid' => $USER->id));
             } else if ($found) {
                 break;
             }
@@ -73,14 +71,15 @@ if ($confirm) { // The operation was confirmed.
 
     // Here I should delete contributions first.
     giportfolio_delete_user_contributions($chapter->id, $USER->id, $giportfolio->id);
-    $DB->delete_records('giportfolio_userchapters', array('id' => $chapter->id, 'iduser' => $USER->id));
+    $DB->delete_records('giportfolio_chapters', array('id' => $chapter->id, 'userid' => $USER->id));
 
-    giportfolio_preload_userchapters($giportfolio, $userid = null); // Fix structure.
+    giportfolio_preload_userchapters($giportfolio); // Fix structure.
 
     redirect('viewgiportfolio.php?id='.$cm->id.'&useredit=1');
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($giportfolio->name));
 
 // The operation has not been confirmed yet so ask the user to do so.
 if ($chapter->subchapter) {

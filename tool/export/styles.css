@@ -1,0 +1,27 @@
+.giportfolio_name {
+    text-size: 1.2em;
+    font-weight: bold;
+}
+
+.giportfolio_chapter_title {
+    text-size: 2em;
+    font-weight: bold;
+    text-style: underline;
+}
+
+table.giportfolio_summary td.fieldname {
+    font-weight: bold;
+}
+
+.giportfolio_contribution_attachments ul,
+.giportfolio_toc_indented ul
+{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.giportfolio_contribution_attachments ul li {
+    display: inline;
+}
+

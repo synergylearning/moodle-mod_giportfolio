@@ -42,7 +42,8 @@ require_capability('mod/giportfolio:edit', $context);
 
 $PAGE->set_url('/mod/giportfolio/delete.php', array('id' => $id, 'chapterid' => $chapterid));
 
-$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id), '*', MUST_EXIST);
+$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
+                                                         'userid' => 0), '*', MUST_EXIST);
 
 // Header and strings.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -54,7 +55,7 @@ if ($confirm) { // The operation was confirmed.
     require_sesskey();
     $fs = get_file_storage();
     if (!$chapter->subchapter) { // Delete all its subchapters if any.
-        $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id),
+        $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0),
                                      'pagenum', 'id, subchapter');
         $found = false;
         foreach ($chapters as $ch) {
@@ -73,17 +74,17 @@ if ($confirm) { // The operation was confirmed.
     $DB->delete_records('giportfolio_chapters', array('id' => $chapter->id));
     giportfolio_delete_chapter_contributions($chapter->id, $cm->id, $giportfolio->id);
 
-    add_to_log($course->id, 'course', 'update mod', '../mod/giportfolio/viewgiportfolio.php?id='.$cm->id,
-               'giportfolio '.$giportfolio->id);
-    add_to_log($course->id, 'giportfolio', 'update', 'viewgiportfolio.php?id='.$cm->id, $giportfolio->id, $cm->id);
+    \mod_giportfolio\event\chapter_deleted::create_from_chapter($giportfolio, $context, $chapter)->trigger();
 
     giportfolio_preload_chapters($giportfolio); // Fix structure.
     $DB->set_field('giportfolio', 'revision', $giportfolio->revision + 1, array('id' => $giportfolio->id));
 
+    giportfolio_regrade($giportfolio);
     redirect('viewgiportfolio.php?id='.$cm->id);
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($giportfolio->name));
 
 // The operation has not been confirmed yet so ask the user to do so.
 if ($chapter->subchapter) {

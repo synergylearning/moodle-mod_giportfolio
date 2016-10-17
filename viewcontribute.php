@@ -84,11 +84,11 @@ if (!$chapterid) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 
-if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))
-    and !$chapter = $DB->get_record('giportfolio_userchapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                                     'iduser' => $userid)) ) {
-
+if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+}
+if ($chapter->userid && $chapter->userid != $userid) {
+    throw new moodle_exception('errorchapter', 'mod_giportfolio');
 }
 
 // Chapter is hidden for students.
@@ -105,8 +105,7 @@ unset($chapterid);
 
 // Security checks  END.
 
-add_to_log($course->id, 'giportfolio', 'view', 'viewcontribute.php?id='.$cm->id.'&amp;chapterid='.$chapter->id,
-           $giportfolio->id, $cm->id);
+\mod_giportfolio\event\chapter_viewed::create_from_chapter($giportfolio, $context, $chapter);
 
 // Read standard strings.
 $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
@@ -180,6 +179,7 @@ $PAGE->navbar->add(get_string('studentgiportfolio', 'mod_giportfolio'),
 $PAGE->navbar->add(fullname($realuser));
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($giportfolio->name));
 
 // Upper nav.
 echo '<div class="navtop">'.$chnavigation.'</div>';

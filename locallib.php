@@ -45,8 +45,8 @@ define('PORTFOLIO_NUM_INDENTED', '3');
  */
 function giportfolio_preload_chapters($giportfolio) {
     global $DB;
-    $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id),
-                                 'pagenum', 'id, pagenum, subchapter, title, hidden');
+    $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0),
+                                 'pagenum', 'id, pagenum, subchapter, title, hidden, userid');
     if (!$chapters) {
         return array();
     }
@@ -133,18 +133,16 @@ function giportfolio_preload_chapters($giportfolio) {
  * Please note the content/text of chapters is not included.
  *
  * @param  stdClass $giportfolio
- * @param $userid
+ * @param int $userid (optional) defaults to current user
  * @return array of id=>chapter
  */
-function giportfolio_preload_userchapters($giportfolio, $userid) {
+function giportfolio_preload_userchapters($giportfolio, $userid = null) {
     global $DB, $USER;
-    if (isset($userid)) {
-        $chapters = $DB->get_records('giportfolio_userchapters', array('giportfolioid' => $giportfolio->id, 'iduser' => $userid),
-                                     'pagenum', 'id, pagenum, subchapter, title, hidden');
-    } else {
-        $chapters = $DB->get_records('giportfolio_userchapters', array('giportfolioid' => $giportfolio->id, 'iduser' => $USER->id),
-                                     'pagenum', 'id, pagenum, subchapter, title, hidden');
+    if (!$userid) {
+        $userid = $USER->id;
     }
+    $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $userid),
+                                 'pagenum', 'id, pagenum, subchapter, title, hidden, userid');
     if (!$chapters) {
         return array();
     }
@@ -293,11 +291,12 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
     $bc->title = get_string('toc', 'mod_giportfolio');
     $bc->attributes['class'] = 'block';
     $bc->content = $toc;
-    if ($allowreport) {
-        $outlineurl = new moodle_url('/report/outline/user.php',
+    if ($allowreport && $giportfolio->myactivitylink) {
+        $reportlink = new moodle_url('/report/outline/user.php',
                                      array('id' => $USER->id, 'course' => $COURSE->id, 'mode' => 'outline'));
-        $bc->content .= $OUTPUT->single_button($outlineurl, get_string('courseoverview', 'mod_giportfolio'), 'get');
+        $bc->content .= $OUTPUT->single_button($reportlink, get_string('courseoverview', 'mod_giportfolio'), 'get');
     }
+
     $regions = $PAGE->blocks->get_regions();
     $firstregion = reset($regions);
     $PAGE->blocks->add_fake_block($bc, $firstregion);
@@ -626,7 +625,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                     '&amp;useredit=1'.'">'.$title.'</a>';
             }
             $toc .= '&nbsp;&nbsp;';
-            if (giportfolio_check_user_chapter($giportfolio->id, $ch->id, $userid)) {
+            if (giportfolio_check_user_chapter($ch, $userid)) {
                 if ($i != 1) {
                     if (!giportfolio_get_first_userchapter($giportfolio->id, $ch->id, $userid)) {
                         $toc .= ' <a title="'.get_string('up').'" href="moveuserchapter.php?id='.$cm->id.
@@ -642,18 +641,18 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                 }
             }
 
-            if (giportfolio_check_user_chapter($giportfolio->id, $ch->id, $userid)) {
+            if (giportfolio_check_user_chapter($ch, $userid)) {
                 $toc .= ' <a title="'.get_string('edit').'" href="editstudent.php?cmid='.$cm->id.'&amp;id='.$ch->id.'">
                 <img src="'.$OUTPUT->pix_url('t/edit').'" class="iconsmall" alt="'.get_string('edit').'" /></a>';
             }
 
-            if (giportfolio_check_user_chapter($giportfolio->id, $ch->id, $userid)) {
+            if (giportfolio_check_user_chapter($ch, $userid)) {
                 $toc .= ' <a title="'.get_string('delete').'" href="deleteuserchapter.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
                     '&amp;sesskey='.$USER->sesskey.'">
                     <img src="'.$OUTPUT->pix_url('t/delete').'" class="iconsmall" alt="'.get_string('delete').'" /></a>';
             }
 
-            if (giportfolio_check_user_chapter($giportfolio->id, $ch->id, $userid) ||
+            if (giportfolio_check_user_chapter($ch, $userid) ||
                 giportfolio_get_last_chapter($giportfolio->id, $ch->id)) {
 
                 $toc .= ' <a title="'.get_string('addafter', 'mod_giportfolio').'" href="editstudent.php?cmid='.$cm->id.
@@ -827,40 +826,31 @@ function giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $ed
 }
 
 function giportfolio_get_collaborative_status($giportfolio) { // Check if the activity is allowing users to add chapters.
-    global $DB;
-
-    $sql = "SELECT id,participantadd FROM {giportfolio}
-            WHERE id = :giportfolioid";
-    $params = array('giportfolioid' => $giportfolio->id);
-
-    $status = $DB->get_record_sql($sql, $params);
-
-    return $status->participantadd;
+    return $giportfolio->participantadd;
 }
 
-function giportfolio_get_user_contributions($chapterid, $giportfolioid, $userid) { // Return user contributions for a chapter-page.
+function giportfolio_get_user_contributions($chapterid, $giportfolioid, $userid, $showshared = false) { // Return user contributions for a chapter-page.
     global $DB;
 
+    $sharedsql = '';
+    if ($showshared) {
+        $sharedsql = ' OR shared = 1';
+    }
     $sql = "SELECT * FROM {giportfolio_contributions}
-            WHERE chapterid = :chapterid AND giportfolioid= :giportfolioid AND userid= :userid
+            WHERE chapterid = :chapterid AND giportfolioid= :giportfolioid
+            AND (userid = :userid $sharedsql)
             ORDER BY timemodified DESC
             ";
     $params = array('giportfolioid' => $giportfolioid, 'chapterid' => $chapterid, 'userid' => $userid);
 
-    $contributions = $DB->get_records_sql($sql, $params);
-
-    if ($contributions) {
-        return $contributions;
-    } else {
-        return 0;
-    }
+    return $DB->get_records_sql($sql, $params);
 }
 
 function giportfolio_get_user_chapters($giportfolioid, $userid) { // Return user added chapters for a giportfolio.
     global $DB;
 
-    $sql = "SELECT * FROM {giportfolio_userchapters}
-            WHERE giportfolioid= :giportfolioid AND iduser= :userid
+    $sql = "SELECT * FROM {giportfolio_chapters}
+            WHERE giportfolioid = :giportfolioid AND userid = :userid
             ORDER BY pagenum ASC
             ";
     $params = array('giportfolioid' => $giportfolioid, 'userid' => $userid);
@@ -878,36 +868,15 @@ function giportfolio_get_user_contribution_status($giportfolioid, $userid) {
     // Return (if exists) the last contribution date to a giportfolio for a user.
     global $DB;
 
-    $sql = "SELECT * FROM {giportfolio_contributions}
-            WHERE giportfolioid= :giportfolioid AND userid= :userid
-            AND hidden = 0
-            ORDER BY timemodified DESC limit 1
-            ";
-    $params = array('giportfolioid' => $giportfolioid, 'userid' => $userid);
+    $params = array(
+        'giportfolioid' => $giportfolioid,
+        'userid' => $userid,
+        'hidden' => 0,
+    );
+    $contribtime = $DB->get_field('giportfolio_contributions', 'MAX(timemodified)', $params);
+    $chaptertime = $DB->get_field('giportfolio_chapters', 'MAX(timemodified)', $params);
 
-    $statuscontribution = $DB->get_record_sql($sql, $params);
-
-    $sql2 = "SELECT * FROM {giportfolio_userchapters}
-            WHERE giportfolioid= :giportfolioid AND iduser= :userid
-            ORDER BY timemodified DESC limit 1
-            ";
-    $params2 = array('giportfolioid' => $giportfolioid, 'userid' => $userid);
-
-    $statuschapters = $DB->get_record_sql($sql2, $params2);
-
-    $timeupdate = 0;
-    if ($statuscontribution && $statuschapters) {
-        $timeupdate = max($statuscontribution->timemodified, $statuschapters->timemodified);
-    } else if (!$statuscontribution && $statuschapters) {
-        $timeupdate = $statuschapters->timemodified;
-    } else if ($statuscontribution && !$statuschapters) {
-        $timeupdate = $statuscontribution->timemodified;
-    }
-
-    if ($timeupdate) {
-        return $timeupdate;
-    }
-    return 0;
+    return (int)max($contribtime, $chaptertime);
 }
 
 function giportfolio_get_giportfolios_number($giportfolioid, $cmid) {
@@ -921,19 +890,19 @@ function giportfolio_get_giportfolios_number($giportfolioid, $cmid) {
     }
 
     list($usql, $params) = $DB->get_in_or_equal(array_keys($userids), SQL_PARAMS_NAMED);
-    $sql = "SELECT COUNT(DISTINCT submitted.iduser)
+    $sql = "SELECT COUNT(DISTINCT submitted.userid)
               FROM (
-                SELECT id,userid as iduser
+                SELECT userid
                   FROM {giportfolio_contributions}
                  WHERE giportfolioid= :giportfolioid
-                 GROUP BY iduser
+                 GROUP BY userid
                  UNION
-                SELECT id,iduser
-                  FROM {giportfolio_userchapters}
+                SELECT userid
+                  FROM {giportfolio_chapters}
                  WHERE giportfolioid= :giportfolioid2
-                 GROUP BY iduser
+                 GROUP BY userid
               ) AS submitted
-             WHERE submitted.iduser $usql
+             WHERE submitted.userid $usql
             ";
     $params['giportfolioid'] = $giportfolioid;
     $params['giportfolioid2'] = $giportfolioid;
@@ -941,26 +910,6 @@ function giportfolio_get_giportfolios_number($giportfolioid, $cmid) {
     $giportfolionumber = $DB->count_records_sql($sql, $params);
 
     return $giportfolionumber;
-}
-
-function giportfolio_chapter_has_contributions($cmid, $chapterid) { // Return if a chapter has contributions or not.
-    global $DB;
-
-    $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
-    $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
-
-    $sql = "SELECT id FROM {giportfolio_contributions}
-            WHERE giportfolioid= :giportfolioid and chapterid= :chapterid
-            ";
-    $params = array('giportfolioid' => $giportfolio->id, 'chapterid' => $chapterid);
-
-    $hascontributions = $DB->get_records_sql($sql, $params);
-
-    if ($hascontributions) {
-        return $hascontributions;
-    } else {
-        return 0;
-    }
 }
 
 function giportfolio_chapter_count_contributions($giportfolioid, $chapterid) {
@@ -987,100 +936,6 @@ function giportfolio_chapter_count_contributions($giportfolioid, $chapterid) {
     $params['giportfolioid'] = $giportfolioid;
 
     return $DB->count_records_select('giportfolio_contributions', $select, $params);
-}
-
-function giportfolio_activity_has_contributions($cmid) { // Return if a giportfolio has contributions or not.
-    global $DB;
-
-    $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
-    $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
-
-    $sql = "SELECT id FROM {giportfolio_contributions}
-            WHERE giportfolioid= :giportfolioid
-            ";
-    $params = array('giportfolioid' => $giportfolio->id);
-
-    $hascontributions = $DB->get_records_sql($sql, $params);
-
-    if ($hascontributions) {
-        return $hascontributions;
-    } else {
-        return 0;
-    }
-}
-
-function giportfolio_activity_has_userchapters($cmid) { // Return if a giportfolio has userchapters or not.
-    global $DB;
-
-    $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
-    $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
-
-    $sql = "SELECT id FROM {giportfolio_userchapters}
-            WHERE giportfolioid= :giportfolioid
-            ";
-    $params = array('giportfolioid' => $giportfolio->id);
-
-    $haschapters = $DB->get_records_sql($sql, $params);
-
-    if ($haschapters) {
-        return $haschapters;
-    } else {
-        return 0;
-    }
-}
-
-function giportfolio_publish_send_notifications($course, $giportfolio, $user) {
-    // Send notifications to course teachers when a giportfolio is published.
-    global $DB, $CFG;
-
-    $sql = " SELECT usr.id as userid, c.shortname,c.id,usr.username,usr.firstname, usr.lastname, usr.email, c.fullname
-             FROM {$CFG->prefix}course c
-             INNER JOIN {$CFG->prefix}context cx ON c.id = cx.instanceid
-             AND cx.contextlevel = '50'
-             INNER JOIN {$CFG->prefix}role_assignments ra ON cx.id = ra.contextid
-             INNER JOIN {$CFG->prefix}role r ON ra.roleid = r.id
-             INNER JOIN {$CFG->prefix}user usr ON ra.userid = usr.id
-             WHERE ra.roleid=3 AND c.id= :courseid
-           ";
-
-    $params = array('courseid' => $course->id);
-    $teachers = $DB->get_records_sql($sql, $params);
-
-    if ($teachers) {
-        $from = "$user->firstname $user->lastname";
-        $emailfrom = $CFG->supportemail;
-        $supportuser = $DB->get_record('user', array('email' => $emailfrom)); // Get support e-mail.
-
-        $htmltext = get_string('emailmessageuser', 'mod_giportfolio').
-            "<a href='$CFG->wwwroot/user/profile.php?id=$user->id'>$from</a><br>".
-            get_string('emailmessagecourse', 'mod_giportfolio').
-            "<a href='$CFG->wwwroot/course/view.php?id=$course->id'>$course->fullname</a>";
-        $plaintext = strip_tags(html_entity_decode($htmltext));
-        $subject = get_string('emailsubject', 'mod_giportfolio');
-        foreach ($teachers as $teacher) {
-            $teacheruser = $DB->get_record('user', array('email' => $teacher->email));
-            if ($teacheruser) {
-                email_to_user($teacheruser, $supportuser, $subject, $plaintext, text_to_html($htmltext));
-            }
-        }
-    }
-}
-
-function giportfolio_explode_x($delimiters, $string) { // Function to explode by multiple delimiters.
-    $returnarray = Array($string); // The array to return.
-    $dcount = 0;
-    while (isset($delimiters[$dcount])) { // Loop to loop through all delimiters.
-        $newreturnarray = Array();
-        foreach ($returnarray as $eltosplit) { // Explode all returned elements by the next delimiter.
-            $putinnewreturnarray = explode($delimiters[$dcount], $eltosplit);
-            foreach ($putinnewreturnarray as $substr) { // Put all the exploded elements in array to return.
-                $newreturnarray[] = $substr;
-            }
-        }
-        $returnarray = $newreturnarray; // Replace the previous return array by the next version.
-        $dcount++;
-    }
-    return $returnarray; // Return the exploded elements.
 }
 
 function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid) {
@@ -1266,7 +1121,7 @@ function giportfolio_get_last_chapter($giportfolioid, $chapterid = null) {
                WHERE pagenum= (
                   SELECT MAX(pagenum)
                     FROM {giportfolio_chapters}
-                   WHERE giportfolioid= :giportfolioid
+                   WHERE giportfolioid= :giportfolioid AND userid = 0
                ) AND giportfolioid= :giportfolioid2 AND id= :chapterid
                ";
         $params = array('giportfolioid' => $giportfolioid, 'giportfolioid2' => $giportfolioid, 'chapterid' => $chapterid);
@@ -1275,61 +1130,40 @@ function giportfolio_get_last_chapter($giportfolioid, $chapterid = null) {
                WHERE pagenum=(
                   SELECT MAX(pagenum)
                     FROM {giportfolio_chapters}
-                   WHERE giportfolioid= :giportfolioid
+                   WHERE giportfolioid= :giportfolioid AND userid = 0
                ) AND giportfolioid= :giportfolioid2
                ";
         $params = array('giportfolioid' => $giportfolioid, 'giportfolioid2' => $giportfolioid);
     }
 
-    $lastchapter = $DB->get_record_sql($sql, $params);
-    if ($lastchapter) {
-        return $lastchapter;
-    } else {
-        return 0;
-    }
+    return $DB->get_record_sql($sql, $params);
 }
 
 function giportfolio_get_first_userchapter($giportfolioid, $chapterid, $userid) { // Return the first user defined chapter.
     global $DB;
 
-    $sql = "SELECT * FROM {giportfolio_userchapters}
+    $sql = "SELECT * FROM {giportfolio_chapters}
                WHERE pagenum=(
                   SELECT MIN(pagenum)
-                    FROM {giportfolio_userchapters}
-                   WHERE giportfolioid= :giportfolioid
+                    FROM {giportfolio_chapters}
+                   WHERE giportfolioid= :giportfolioid AND userid = :userid
                ) AND giportfolioid= :giportfolioid2 AND id= :chapterid
                ";
     $params = array(
-        'giportfolioid' => $giportfolioid, 'giportfolioid2' => $giportfolioid, 'chapterid' => $chapterid, 'iduser' => $userid
+        'giportfolioid' => $giportfolioid, 'giportfolioid2' => $giportfolioid, 'chapterid' => $chapterid, 'userid' => $userid
     );
 
-    $firstchapter = $DB->get_record_sql($sql, $params);
-    if ($firstchapter) {
-        return $firstchapter;
-    } else {
-        return 0;
-    }
+    return $DB->get_record_sql($sql, $params);
 }
 
-function giportfolio_check_user_chapter($giportfolioid, $chapterid, $userid) { // Check if chapter is user defined one.
-    global $DB;
-
-    $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolioid));
-
-    if ($chapter) {
-        $userchapter = 0;
-    } else {
-        $userchapter = $DB->get_record('giportfolio_userchapters', array(
-                                                                        'id' => $chapterid, 'giportfolioid' => $giportfolioid,
-                                                                        'iduser' => $userid
-                                                                   ));
+function giportfolio_check_user_chapter($chapter, $userid) { // Check if chapter is user defined one.
+    if (!is_object($chapter)) {
+        throw new coding_exception('Must pass full chapter object to giportfolio_check_user_chapter');
     }
-
-    if ($userchapter) {
-        return $userchapter;
-    } else {
-        return 0;
+    if ($chapter->userid && $chapter->userid != $userid) {
+        throw new coding_exception('Chapter user does not match the user provided');
     }
+    return (bool)($chapter->userid);
 }
 
 function giportfolio_delete_user_contributions($chapterid, $userid, $giportfolioid) {
@@ -1337,10 +1171,10 @@ function giportfolio_delete_user_contributions($chapterid, $userid, $giportfolio
     global $DB;
 
     $sql = "SELECT * FROM {giportfolio_contributions}
-               WHERE giportfolioid= :giportfolioid AND userid= :iduser AND chapterid= :chapterid
+               WHERE giportfolioid= :giportfolioid AND userid= :userid AND chapterid= :chapterid
                ";
 
-    $params = array('giportfolioid' => $giportfolioid, 'iduser' => $userid, 'chapterid' => $chapterid);
+    $params = array('giportfolioid' => $giportfolioid, 'userid' => $userid, 'chapterid' => $chapterid);
 
     $usercontributions = $DB->get_records_sql($sql, $params);
 

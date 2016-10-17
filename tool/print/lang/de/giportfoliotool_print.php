@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['eventchapterprinted'] = 'Kapitel wurde gedruckt';
+$string['eventgiportfolioprinted'] = 'Portfolio wurde gedruckt';
 $string['pluginname'] = 'Portfolio drucken';
 $string['print:print'] = 'Portfolio drucken';
 $string['printchapter'] = 'Dieses Kapitel drucken';

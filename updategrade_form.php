@@ -55,7 +55,7 @@ class mod_giporotfolio_grading_form extends moodleform {
 
         if ($dategraded) {
             $datestring = userdate($dategraded)."&nbsp; (".format_time(time() - $dategraded).")";
-            $mform->addElement('header', 'Last Grade', get_string('lastgrade', 'assignment'));
+            $mform->addElement('header', 'Last Grade', get_string('lastgrade', 'mod_giportfolio'));
             $mform->addElement('static', 'lastgrade', get_string('lastgrade', 'mod_giportfolio').':', $datestring);
         }
         // Buttons.
@@ -83,7 +83,7 @@ class mod_giporotfolio_grading_form extends moodleform {
         } else {
             $grade = $this->_customdata['str_grade'];
         }
-        $mform->addElement('static', 'finalgrade', get_string('currentgrade', 'assignment').':', $grade);
+        $mform->addElement('static', 'finalgrade', get_string('currentgrade', 'assign').':', $grade);
         $mform->setType('finalgrade', PARAM_INT);
     }
 }

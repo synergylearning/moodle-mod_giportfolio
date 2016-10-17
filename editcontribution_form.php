@@ -58,9 +58,4 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
 
         $this->add_action_buttons(true, get_string('updatecontrib', 'giportfolio'));
     }
-
-    public function definition_after_data() {
-        $mform = $this->_form;
-        $mform->applyFilter('cname', 'trim');
-    }
 }

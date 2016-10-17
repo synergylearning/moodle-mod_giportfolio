@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 function giportfoliotool_print_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $giportfolionode) {
-    global $PAGE;
+    global $PAGE, $DB;
 
     if ($PAGE->cm->modname !== 'giportfolio') {
         return;
@@ -37,6 +37,11 @@ function giportfoliotool_print_extend_settings_navigation(settings_navigation $s
 
     if (empty($params['id']) or empty($params['chapterid'])) {
         return;
+    }
+
+    $giportfolio = $DB->get_record('giportfolio', array('id' => $PAGE->cm->instance), '*', MUST_EXIST);
+    if ($giportfolio->klassenbuchtrainer) {
+        return; // Not available when using Klassenbuch trainer mode.
     }
 
     if (has_capability('giportfoliotool/print:print', $context)) {

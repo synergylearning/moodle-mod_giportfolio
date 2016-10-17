@@ -161,9 +161,18 @@ body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
     border: 2px #d08080 solid;
     padding: 5px;
 }
+.mod_giportfolio-extralinks {
+    float: right;
+    text-align: right;
+}
 
-.path-course-view .giportfolio-count {
-    background: #9ebeff;
-    margin-left: 3em;
-    padding: 2px;
+.path-mod-giportfolio article.giportfolio-contribution.notmine {
+    background-color: #EEF0F1;
+    color: #555;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.path-mod-giportfolio .giportfolio_content .singlebutton {
+    display: inline-block;
 }

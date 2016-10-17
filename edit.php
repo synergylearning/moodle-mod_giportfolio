@@ -46,8 +46,8 @@ $PAGE->set_url('/mod/giportfolio/edit.php', array('cmid' => $cmid, 'id' => $chap
 $PAGE->set_pagelayout('admin'); // This is a bloody hack!
 
 if ($chapterid) {
-    $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id),
-                               '*', MUST_EXIST);
+    $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
+                                                             'userid' => 0), '*', MUST_EXIST);
 } else {
     $chapter = new stdClass();
     $chapter->id = null;
@@ -76,10 +76,8 @@ if ($mform->is_cancelled()) {
         $data = file_postupdate_standard_editor($data, 'content', $options, $context, 'mod_giportfolio', 'chapter', $data->id);
         $DB->update_record('giportfolio_chapters', $data);
 
-        add_to_log($course->id, 'course', 'update mod', '../mod/giportfolio/viewgiportfolio.php?id='.$cm->id,
-                   'giportfolio '.$giportfolio->id);
-        add_to_log($course->id, 'giportfolio', 'update', 'viewgiportfolio.php?id='.$cm->id.'&chapterid='.$data->id,
-                   $giportfolio->id, $cm->id);
+
+        \mod_giportfolio\event\chapter_updated::create_from_chapter($giportfolio, $context, $data)->trigger();
 
     } else {
         // Adding new chapter.
@@ -90,11 +88,12 @@ if ($mform->is_cancelled()) {
         $data->importsrc = '';
         $data->content = ''; // Updated later.
         $data->contentformat = FORMAT_HTML; // Updated later.
+        $data->userid = 0; // Database default, but set here as well to be clear.
 
         // Make room for new page.
         $sql = "UPDATE {giportfolio_chapters}
                    SET pagenum = pagenum + 1
-                 WHERE giportfolioid = ? AND pagenum >= ?";
+                 WHERE giportfolioid = ? AND pagenum >= ? AND userid = 0";
         $DB->execute($sql, array($giportfolio->id, $data->pagenum));
 
         $data->id = $DB->insert_record('giportfolio_chapters', $data);
@@ -104,13 +103,15 @@ if ($mform->is_cancelled()) {
         $DB->update_record('giportfolio_chapters', $data);
         $DB->set_field('giportfolio', 'revision', $giportfolio->revision + 1, array('id' => $giportfolio->id));
 
-        add_to_log($course->id, 'course', 'update mod', '../mod/giportfolio/viewgiportfolio.php?id='.$cm->id,
-                   'giportfolio '.$giportfolio->id);
-        add_to_log($course->id, 'giportfolio', 'update', 'viewgiportfolio.php?id='.$cm->id.'&chapterid='.$data->id,
-                   $giportfolio->id, $cm->id);
+        \mod_giportfolio\event\chapter_created::create_from_chapter($giportfolio, $context, $data)->trigger();
     }
 
     giportfolio_preload_chapters($giportfolio); // Fix structure.
+
+    if ($giportfolio->automaticgrading) {
+        giportfolio_regrade($giportfolio);
+    }
+
     redirect("viewgiportfolio.php?id=$cm->id&chapterid=$data->id");
 }
 
@@ -120,7 +121,7 @@ $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('editingchapter', 'mod_giportfolio'));
+echo $OUTPUT->heading(format_string($giportfolio->name));
 
 $mform->display();
 

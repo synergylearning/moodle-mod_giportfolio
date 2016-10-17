@@ -105,7 +105,8 @@ $PAGE->navbar->add(get_string('studentgiportfolio', 'mod_giportfolio'),
                    new moodle_url('submissions.php?=', array('id' => $cm->id)));
 $PAGE->navbar->add(fullname($realuser));
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('giportfolioof', 'mod_giportfolio').' '.fullname($user, true));
+echo $OUTPUT->heading(format_string($giportfolio->name));
+echo $OUTPUT->heading(get_string('giportfolioof', 'mod_giportfolio').' '.fullname($user, true), 3);
 $mform->display();
 echo '<br />';
 echo $OUTPUT->footer();

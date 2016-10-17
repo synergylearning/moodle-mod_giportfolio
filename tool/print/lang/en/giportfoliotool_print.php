@@ -25,9 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$string['pluginname'] = 'giportfolio printing';
-$string['printgiportfolio'] = 'Print giportfolio';
+$string['eventchapterprinted'] = 'Portfolio chapter printed';
+$string['eventgiportfolioprinted'] = 'Portfolio printed';
+$string['pluginname'] = 'Portfolio printing';
+$string['printgiportfolio'] = 'Print portfolio';
 $string['printchapter'] = 'Print this chapter';
 $string['printdate'] = 'Date';
 $string['printedby'] = 'Printed by';
-$string['print:print'] = 'Print giportfolio';
+$string['print:print'] = 'Print portfolio';

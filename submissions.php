@@ -54,6 +54,7 @@ require_capability('mod/giportfolio:viewgiportfolios', $context);
 
 $PAGE->set_title(format_string($giportfolio->name));
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($giportfolio->name));
 
 // Set up the list of tabs.
 $allurl = new moodle_url($PAGE->url);
@@ -68,12 +69,7 @@ $tabs = array(
 
 echo get_string('studentgiportfolios', 'mod_giportfolio');
 echo '</br>';
-if ($CFG->version > 2013051400) {
-    echo $OUTPUT->tabtree($tabs, $currenttab);
-} else {
-    $tabs = array($tabs);
-    echo print_tabs($tabs, $currenttab, array(), array(), true);
-}
+echo $OUTPUT->tabtree($tabs, $currenttab);
 echo get_string('filterlist', 'mod_giportfolio');
 
 $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
@@ -359,16 +355,16 @@ $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', array('clas
 
 $mform->addElement('hidden', 'updatepref');
 $mform->setDefault('updatepref', 1);
-$mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'assignment'));
+$mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'giportfolio'));
 
 $mform->setDefault('filter', $filter);
 
-$mform->addElement('text', 'perpage', get_string('pagesize', 'assignment'), array('size' => 1));
+$mform->addElement('text', 'perpage', get_string('pagesize', 'giportfolio'), array('size' => 1));
 $mform->setDefault('perpage', $perpage);
 
-$mform->addElement('checkbox', 'quickgrade', get_string('quickgrade', 'assignment'));
+$mform->addElement('checkbox', 'quickgrade', get_string('quickgrade', 'giportfolio'));
 $mform->setDefault('quickgrade', $quickgrade);
-$mform->addHelpButton('quickgrade', 'quickgrade', 'assignment');
+$mform->addHelpButton('quickgrade', 'quickgrade', 'giportfolio');
 
 $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
 

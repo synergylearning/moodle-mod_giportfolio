@@ -81,7 +81,7 @@ $capabilities = array(
     ),
 
     'mod/giportfolio:gradegiportfolios' => array(
-        'captype' => 'read',
+        'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
@@ -91,13 +91,21 @@ $capabilities = array(
     ),
 
     'mod/giportfolio:editgiportfolios' => array(
-        'captype' => 'read',
+        'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         )
+    ),
+
+    'mod/giportfolio:printclassplan' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'student' => CAP_ALLOW,
+        ),
     ),
     // SYNERGY.
 

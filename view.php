@@ -50,7 +50,7 @@ require_course_login($course, true, $cm);
 $chapters = giportfolio_preload_chapters($giportfolio);
 
 // SYNERGY - add fake user chapters.
-$additionalchapters = giportfolio_preload_userchapters($giportfolio, $USER->id);
+$additionalchapters = giportfolio_preload_userchapters($giportfolio);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
@@ -77,6 +77,13 @@ if ($allowedit) {
     $edit = 0;
 }
 
+if ($giportfolio->skipintro) {
+    if ($allowcontribute && !$allowedit) {
+        // Redirect to the 'update contribution' page.
+        redirect(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)));
+    }
+}
+
 // Read chapters.
 
 $PAGE->set_url('/mod/giportfolio/view.php', array('id' => $id));
@@ -87,8 +94,7 @@ unset($bid);
 
 // Security checks  END.
 
-add_to_log($course->id, 'giportfolio', 'view', 'view.php?id='.$cm->id.'&amp;chapterid='.$giportfolio->id,
-           $giportfolio->id, $cm->id);
+\mod_giportfolio\event\course_module_viewed::create_from_giportfolio($giportfolio, $context)->trigger();
 
 // Read standard strings.
 $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
@@ -103,6 +109,7 @@ $PAGE->set_heading(format_string($course->fullname));
 // Giportfolio display HTML code.
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($giportfolio->name));
 echo $OUTPUT->box_start('generalbox giportfolio_content');
 
 $intro = file_rewrite_pluginfile_urls($giportfolio->intro, 'pluginfile.php', $context->id, 'mod_giportfolio', 'intro', '');
@@ -137,10 +144,10 @@ if ($allowedit) {
         echo '</br>';
         echo $OUTPUT->single_button(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)),
                                     get_string('continuecontrib', 'mod_giportfolio'), '', array());
-        if ($allowreport) {
-            $outlineurl = new moodle_url('/report/outline/user.php',
-                                         array('id' => $USER->id, 'course' => $course->id, 'mode' => 'outline'));
-            echo $OUTPUT->single_button($outlineurl, get_string('courseoverview', 'mod_giportfolio'), 'get');
+        if ($allowreport && $giportfolio->myactivitylink) {
+            $reporturl = new moodle_url('/report/outline/user.php',
+                                        array('id' => $USER->id, 'course' => $course->id, 'mode' => 'outline'));
+            echo $OUTPUT->single_button($reporturl, get_string('courseoverview', 'mod_giportfolio'), 'get');
         }
         echo '</br>';
         echo get_string('lastupdated', 'mod_giportfolio').date('l jS \of F Y h:i:s A', $usercontribution);

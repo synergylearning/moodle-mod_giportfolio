@@ -26,7 +26,9 @@
 require(dirname(__FILE__).'/../../../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 global $CFG, $DB, $USER, $PAGE, $SITE;
+require_once($CFG->libdir.'/pdflib.php');
 require_once($CFG->libdir.'/tcpdf/tcpdf.php');
+require_once($CFG->dirroot.'/mod/giportfolio/tool/print/pdflib.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
@@ -48,6 +50,9 @@ if ($chapterid) {
     // Single chapter printing - only visible!
     $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id),
                                '*', MUST_EXIST);
+    if ($chapter->userid && $chapter->userid != $USER->id) {
+        throw new moodle_exception('notyourchapter', 'mod_giportfolio');
+    }
 } else {
     // Complete giportfolio.
     $chapter = false;
@@ -64,7 +69,7 @@ unset($chapterid);
 $chapters = giportfolio_preload_chapters($giportfolio);
 
 // SYNERGY - add fake user chapters.
-$additionalchapters = giportfolio_preload_userchapters($giportfolio, $userid = null);
+$additionalchapters = giportfolio_preload_userchapters($giportfolio);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
@@ -74,7 +79,7 @@ $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
 $strgiportfolio = get_string('modulename', 'mod_giportfolio');
 $strtop = get_string('top', 'mod_giportfolio');
 
-class PORTFOLIOPDF extends TCPDF {
+class PORTFOLIOPDF extends pdf {
 
     // Page header.
     public function Header() {
@@ -100,16 +105,15 @@ class PORTFOLIOPDF extends TCPDF {
 
 $stylev = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0));
 
-$allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id), 'pagenum');
-
-$alluserchapters = $DB->get_records('giportfolio_userchapters', array('giportfolioid' => $giportfolio->id, 'iduser' => $USER->id),
+$allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
+$alluserchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
                                     'pagenum');
 if ($alluserchapters) {
     $allchapters = $alluserchapters + $allchapters;
 }
 
 // Create new PDF document.
-$pdf = new PORTFOLIOPDF($orientation = 'P', PDF_UNIT, $format = 'A4', true, 'UTF-8', false);
+$pdf = new PORTFOLIOPDF($orientation = 'P', 'mm', $format = 'A4', true, 'UTF-8', false);
 
 // If there is a file called 'glogo.jpg' in the pix/ subfolder, it will be added to the page.
 // If there is a file called 'pdfklassenbuch_details.php' in this folder, it will be loaded to find the
@@ -122,32 +126,32 @@ if (file_exists($pdfdetailsfile)) {
 }
 
 // Set document information.
-$pdf->SetCreator(PDF_CREATOR);
+//$pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor($pdfauthorname);
 $pdf->SetTitle('Export Quiz Report');
 $pdf->SetSubject('Export Quiz Report');
 $pdf->SetKeywords('Export Quiz Reporte');
 
 // Set default header data.
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 001', PDF_HEADER_STRING);
+//$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 001', PDF_HEADER_STRING);
 
 // Set header and footer fonts.
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // Set default monospaced font.
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+//$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // Set margins.
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+//$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+//$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+//$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // Set auto page breaks.
-$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+//$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // Set image scale factor.
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Set default font subsetting mode.
 $pdf->setFontSubsetting(true);
@@ -175,49 +179,8 @@ $pdf->SetFont('helvetica', '', 8);
 
 $intro = file_rewrite_pluginfile_urls($giportfolio->intro, 'pluginfile.php', $context->id, 'mod_giportfolio', 'intro', '');
 
-$fs = get_file_storage();
-preg_match_all('/<img[^>]+>/i', $intro, $result);
-
-$images = array(); // Will stores the images links.
-$file = array(); // Will store files array.
-$wfile = array(); // Will store file width.
-$hfile = array(); // Will store file height.
-
-for ($img = 0; $img < count($result[0]); $img++) {
-    // Get images links inside html content.
-    if (preg_match('%<img\s.*?src=".*?/?([^/]+?(\.gif|\.png|\.jpg|\.jpeg))"%s', $result[0][$img], $regs)) {
-        preg_match_all('/(width|height)=("[^"]*")/i', $result[0][$img], $dimensiuni); // Get width and height for the resized image.
-        $image = $regs[1]; // Get the name of the image.
-        $fullpath = "/$context->id/mod_giportfolio/intro/$image";
-        array_push($file, $fs->get_file_by_hash(sha1($fullpath)));
-        array_push($images, $result[0][$img]);
-        array_push($wfile, $dimensiuni[2][0]);
-        array_push($hfile, $dimensiuni[2][1]);
-    } else {
-        $image = "";
-    }
-}
-
-$htmlentity = giportfolio_explode_x($images, $intro);
-$lungime = count($htmlentity);
-for ($mo = 0; $mo < $lungime; $mo++) {
-    $lo = 0;
-    $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmlentity[$mo], $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                        $align = '', $autopadding = true);
-    if ($mo != $lungime - 1 && $file[$mo]) {
-        $heighinit = 0;
-        $heighimage = 0;
-        $wfile = str_replace('"', '', $wfile[$lo]);
-        $hfile = str_replace('"', '', $hfile[$lo]);
-        $hmm = ($wfile * 25.4) / 72;
-        $imgdata = $file[$mo]->get_content();
-        $heighinit = $pdf->GetY();
-        $pdf->Image('@'.$imgdata, $x = '', $y = '');
-        $heighimage = $pdf->getImageRBY();
-        $pdf->Ln($heighimage - $heighinit);
-    }
-    $lo++;
-}
+$intro = pdfgiportfolio_fix_image_links($intro);
+$pdf->writeHTML($intro);
 
 $pdf->Ln(5);
 $site = '<a href="'.$CFG->wwwroot.'">'.format_string($SITE->fullname, true, array('context' => $context)).'</a>';
@@ -261,51 +224,8 @@ foreach ($chapters as $ch) {
 
     // Add suport for admin images in content.
     $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $context->id, 'mod_giportfolio', 'chapter', $ch->id);
-
-    $fs = get_file_storage();
-    preg_match_all('/<img[^>]+>/i', $content, $result);
-
-    $images = array(); // Will stores the images links.
-    $file = array(); // Will store files array.
-    $wfile = array(); // Will store file width.
-    $hfile = array(); // Will store file height.
-
-    for ($img = 0; $img < count($result[0]); $img++) {
-        // Get images links inside html content.
-        if (preg_match('%<img\s.*?src=".*?/?([^/]+?(\.gif|\.png|\.jpg|\.jpeg))"%s', $result[0][$img], $regs)) {
-            // Get width and height for the resized image.
-            preg_match_all('/(width|height)=("[^"]*")/i', $result[0][$img], $dimensiuni);
-            $image = $regs[1]; // Get the name of the image.
-            $fullpath = "/$context->id/mod_giportfolio/chapter/$ch->id/$image";
-            array_push($file, $fs->get_file_by_hash(sha1($fullpath)));
-            array_push($images, $result[0][$img]);
-            array_push($wfile, $dimensiuni[2][0]);
-            array_push($hfile, $dimensiuni[2][1]);
-        } else {
-            $image = "";
-        }
-    }
-
-    $htmlentity = giportfolio_explode_x($images, $content);
-    $lungime = count($htmlentity);
-    for ($mo = 0; $mo < $lungime; $mo++) {
-        $lo = 0;
-        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmlentity[$mo], $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                            $align = '', $autopadding = true);
-        if ($mo != $lungime - 1 && $file[$mo]) {
-            $heighinit = 0;
-            $heighimage = 0;
-            $wfile = str_replace('"', '', $wfile[$lo]);
-            $hfile = str_replace('"', '', $hfile[$lo]);
-            $hmm = ($wfile * 25.4) / 72;
-            $imgdata = $file[$mo]->get_content();
-            $heighinit = $pdf->GetY();
-            $pdf->Image('@'.$imgdata, $x = '', $y = '');
-            $heighimage = $pdf->getImageRBY();
-            $pdf->Ln($heighimage - $heighinit);
-        }
-        $lo++;
-    }
+    $content = pdfgiportfolio_fix_image_links($content);
+    $pdf->writeHTML($content);
 
     $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
     if ($contriblist) {
@@ -318,57 +238,11 @@ foreach ($chapters as $ch) {
                                 $fill = 0, $reseth = true, $align = '', $autopadding = true);
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
-
-            $fs = get_file_storage();
-
-            preg_match_all('/<img[^>]+>/i', $contribtext, $result);
-            unset($images);
-            unset($file);
-
-            $images = array(); // Will stores the images links.
-            $file = array(); // Will store files array.
-            $wfile = array(); // Will store file width.
-            $hfile = array(); // Will store file height.
-
-            for ($img = 0; $img < count($result[0]); $img++) {
-                // Get images links inside html content.
-                if (preg_match('%<img\s.*?src=".*?/?([^/]+?(\.gif|\.png|\.jpg|\.jpeg))"%s', $result[0][$img], $regs)) {
-                    // Get width and height for the resized image.
-                    preg_match_all('/(width|height)=("[^"]*")/i', $result[0][$img], $dimensiuni);
-                    $image = $regs[1]; // Get the name of the image.
-                    $fullpath = "/$context->id/mod_giportfolio/contribution/$contrib->id/$image";
-                    array_push($file, $fs->get_file_by_hash(sha1($fullpath)));
-                    array_push($images, $result[0][$img]);
-                    array_push($wfile, $dimensiuni[2][0]);
-                    array_push($hfile, $dimensiuni[2][1]);
-                } else {
-                    $image = "";
-                }
-            }
-
-            $htmlentity = giportfolio_explode_x($images, $contribtext);
-            $lungime = count($htmlentity);
-            for ($mo = 0; $mo < $lungime; $mo++) {
-                $lo = 0;
-                $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmlentity[$mo], $border = 0, $ln = 1, $fill = 0,
-                                    $reseth = true, $align = '', $autopadding = true);
-                if ($mo != $lungime - 1 && $file[$mo]) {
-                    $heighinit = 0;
-                    $heighimage = 0;
-                    $wfile = str_replace('"', '', $wfile[$lo]);
-                    $hfile = str_replace('"', '', $hfile[$lo]);
-                    $hmm = ($wfile * 25.4) / 72;
-                    $imgdata = $file[$mo]->get_content();
-                    $heighinit = $pdf->GetY();
-                    $pdf->Image('@'.$imgdata, $x = '', $y = '');
-                    $heighimage = $pdf->getImageRBY();
-                    $pdf->Ln($heighimage - $heighinit);
-                }
-                $lo++;
-                $pdf->Ln(2);
-            }
+            $contribtext = pdfgiportfolio_fix_image_links($contribtext);
+            $pdf->writeHTML($contribtext);
         }
     }
 }
 
-$pdf->Output('pdfgiportfolio.pdf'.$giportfolio->name, 'I');
+$filename = 'giportfolio-'.clean_filename($giportfolio->name).'.pdf';
+$pdf->Output($filename, 'I');

@@ -64,7 +64,6 @@ class restore_giportfolio_activity_task extends restore_activity_task {
         $contents[] = new restore_decode_content('giportfolio', array('intro'), 'giportfolio');
         $contents[] = new restore_decode_content('giportfolio_chapters', array('content'), 'giportfolio_chapter');
 
-        $contents[] = new restore_decode_content('giportfolio_userchapters', array('content'), 'giportfolio_userchapter');
         $contents[] = new restore_decode_content('giportfolio_contributions', array('content'), 'giportfolio_contribution');
 
         return $contents;

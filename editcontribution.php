@@ -57,17 +57,14 @@ $maxbytes = $course->maxbytes; // TODO: add some setting.
 // Read chapters.
 $chapters = giportfolio_preload_chapters($giportfolio);
 // Add fake user chapters.
-$additionalchapters = giportfolio_preload_userchapters($giportfolio, $userid = null);
+$additionalchapters = giportfolio_preload_userchapters($giportfolio);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
 
 $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id));
-if (!$chapter) {
-    $chapter = $DB->get_record('giportfolio_userchapters', array(
-                                                                'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                                'iduser' => $USER->id
-                                                           ), '*', MUST_EXIST);
+if ($chapter->userid && $chapter->userid != $USER->id) {
+    throw new moodle_exception('notyourchapter', 'mod_giportfolio');
 }
 
 // Chapter is hidden for students.
@@ -123,6 +120,8 @@ if ($action) {
             // Delete the contribution.
             $DB->delete_records('giportfolio_contributions', array('id' => $contribution->id));
 
+            giportfolio_automatic_grading($giportfolio, $contribution->userid);
+
             redirect($redir);
 
         } else {
@@ -132,6 +131,7 @@ if ($action) {
             $continue = new moodle_url($PAGE->url, array('confirm' => 1, 'sesskey' => sesskey()));
 
             echo $OUTPUT->header();
+            echo $OUTPUT->heading(format_string($giportfolio->name));
             echo $OUTPUT->confirm($msg, $continue, $redir);
             echo $OUTPUT->footer();
 
@@ -139,17 +139,32 @@ if ($action) {
         }
 
     } else if ($action == 'show') {
+        require_sesskey();
         if ($contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 0, array('id' => $contribution->id));
         }
         redirect($redir);
 
     } else if ($action == 'hide') {
+        require_sesskey();
         if (!$contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 1, array('id' => $contribution->id));
         }
         redirect($redir);
 
+    } else if ($action == 'share') {
+        require_sesskey();
+        if (!$contribution->shared) {
+            $DB->set_field('giportfolio_contributions', 'shared', 1, array('id' => $contribution->id));
+        }
+        redirect($redir);
+
+    } else if ($action == 'unshare') {
+        require_sesskey();
+        if ($contribution->shared) {
+            $DB->set_field('giportfolio_contributions', 'shared', 0, array('id' => $contribution->id));
+        }
+        redirect($redir);
     }
 }
 
@@ -195,6 +210,8 @@ if ($mform->is_cancelled()) {
                                                  'attachment', $contributionid);
     $DB->update_record('giportfolio_contributions', $data);
 
+    giportfolio_automatic_grading($giportfolio, $USER->id);
+
     if ($sendnotification) {
         $graders = get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios');
         if ($graders) {
@@ -237,6 +254,8 @@ if ($mform->is_cancelled()) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($giportfolio->name));
+
 // Chapter itself instructions.
 echo $OUTPUT->box_start('generalbox giportfolio_content');
 if (!$giportfolio->customtitles) {

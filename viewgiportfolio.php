@@ -23,7 +23,7 @@
  */
 
 require(dirname(__FILE__).'/../../config.php');
-global $CFG, $DB, $PAGE, $OUTPUT, $SITE, $USER;
+global $CFG, $DB, $PAGE, $OUTPUT, $SITE, $USER, $SESSION;
 require_once($CFG->dirroot.'/mod/giportfolio/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 require_once($CFG->dirroot.'/comment/lib.php');
@@ -33,6 +33,7 @@ $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
 $edit = optional_param('edit', -1, PARAM_BOOL); // Edit mode.
 $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
+$showshared = optional_param('showshared', null, PARAM_BOOL);
 
 // Security checks START - teachers edit; students view.
 
@@ -69,11 +70,19 @@ if ($allowedit) {
 } else {
     $edit = 0;
 }
+if ($showshared === null) {
+    $showshared = false;
+    if (isset($SESSION->giportfolio_show_shared)) {
+        $showshared = $SESSION->giportfolio_show_shared;
+    }
+} else {
+    $SESSION->giportfolio_show_shared = $showshared;
+}
 
 // Read chapters.
 $chapters = giportfolio_preload_chapters($giportfolio);
 // SYNERGY - add fake user chapters.
-$additionalchapters = giportfolio_preload_userchapters($giportfolio, $userid = null);
+$additionalchapters = giportfolio_preload_userchapters($giportfolio);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
@@ -101,11 +110,12 @@ if (!$chapterid) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 
-if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id)) and
-    !$chapter = $DB->get_record('giportfolio_userchapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                                 'iduser' => $USER->id)) ) {
-
+if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+}
+$isuserchapter = (bool)$chapter->userid;
+if ($isuserchapter && $chapter->userid != $USER->id) {
+    throw new moodle_exception('notyourchapter', 'mod_giportfolio');
 }
 
 // Chapter is hidden for students.
@@ -121,8 +131,8 @@ unset($bid);
 unset($chapterid);
 
 // Security checks  END.
-add_to_log($course->id, 'giportfolio', 'view', 'viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$chapter->id,
-           $giportfolio->id, $cm->id);
+
+\mod_giportfolio\event\chapter_viewed::create_from_chapter($giportfolio, $context, $chapter);
 
 // Read standard strings.
 $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
@@ -188,12 +198,37 @@ if ($nextid) {
     $completion->set_module_viewed($cm);
 }
 
+// Add extra links.
+$extralinks = '';
+if (has_capability('giportfoliotool/print:print', $context)) {
+    // Print links.
+    $printallurl = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $cm->id));
+    $extralinks .= html_writer::link($printallurl, get_string('printgiportfolio', 'giportfoliotool_print'));
+    $extralinks .= html_writer::empty_tag('br');
+    $printchapterurl = new moodle_url('/mod/giportfolio/tool/print/index.php',
+                           array('id' => $cm->id, 'chapterid' => $chapter->id));
+    $extralinks .= html_writer::link($printchapterurl, get_string('printchapter', 'giportfoliotool_print'));
+    $extralinks .= html_writer::empty_tag('br');
+}
+if (has_capability('mod/giportfolio:viewgiportfolios', $context)) {
+    // Grading link.
+    $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id));
+    $extralinks .= html_writer::link($url, get_string('studentgiportfolio', 'mod_giportfolio'));
+    $extralinks .= html_writer::empty_tag('br');
+}
+$url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $cm->id));
+$extralinks .= html_writer::link($url, get_string('exportzip', 'mod_giportfolio'));
+$extralinks = html_writer::div($extralinks, 'mod_giportfolio-extralinks');
+
+
 // Giportfolio display HTML code.
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($giportfolio->name));
 
 // Upper nav.
 echo '<div class="navtop">'.$chnavigation.'</div>';
+echo $extralinks;
 
 // Chapter itself.
 echo $OUTPUT->box_start('generalbox giportfolio_content');
@@ -212,7 +247,7 @@ if (!$giportfolio->customtitles) {
 // SYNERGY.
 global $USER;
 $pixpath = "$CFG->wwwroot/pix";
-$contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
+$contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id, $showshared);
 $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                             'chapter', $chapter->id);
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
@@ -221,7 +256,43 @@ if (!$allowedit) {
     $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
     echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
 }
-echo '</br></br>';
+if (!$isuserchapter) {
+    // If this is not a user chapter, display a button to show/hide other users' shared contributions.
+    if ($showshared) {
+        $hidesharedurl = new moodle_url($PAGE->url, array('showshared' => 0));
+        echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio'), 'GET');
+    } else {
+        $showsharedurl = new moodle_url($PAGE->url, array('showshared' => 1));
+        echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'mod_giportfolio'), 'GET');
+    }
+}
+echo '<br><br>';
+
+$otherusers = array();
+if ($showshared) {
+    $userids = array();
+    foreach ($contriblist as $contrib) {
+        if ($contrib->userid != $USER->id) {
+            $userids[$contrib->userid] = $contrib->userid;
+        }
+    }
+    if ($userids) {
+        $namefields = get_all_user_name_fields(true);
+        $users = $DB->get_records_list('user', 'id', $userids, '', 'id,'.$namefields);
+        foreach ($users as $user) {
+            $fullname = fullname($user);
+            $profile = new moodle_url('/user/view.php', array('id' => $user->id));
+            $otherusers[$user->id] = html_writer::link($profile, $fullname);
+        }
+    } else {
+        echo html_writer::tag('p', get_string('noshared', 'mod_giportfolio'));
+    }
+}
+
+// Output the 'class plan' content.
+if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()) {
+    echo klassenbuchtool_lernschritte_get_subcontent($chapter->id, $context, 'giportfolio');
+}
 
 if ($contriblist) {
     comment::init();
@@ -238,55 +309,80 @@ if ($contriblist) {
 
     $align = 'right';
     foreach ($contriblist as $contrib) {
-        $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php',
-                                  array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid));
+        $ismine = ($contrib->userid == $USER->id);
 
-        $editurl = new moodle_url($baseurl);
-        $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
-        $editicon = html_writer::link($editurl, $editicon);
+        if ($ismine) {
+            $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php',
+                                      array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid));
 
-        $delurl = new moodle_url($baseurl, array('action' => 'delete'));
-        $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
-        $delicon = html_writer::link($delurl, $delicon);
+            $editurl = new moodle_url($baseurl);
+            $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
+            $editicon = html_writer::link($editurl, $editicon);
 
-        if ($contrib->hidden) {
-            $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
-            $showicon = $OUTPUT->pix_icon('t/show', get_string('show'));
+            $delurl = new moodle_url($baseurl, array('action' => 'delete'));
+            $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+            $delicon = html_writer::link($delurl, $delicon);
+
+            if ($contrib->hidden) {
+                $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
+                $showicon = $OUTPUT->pix_icon('t/show', get_string('show'));
+            } else {
+                $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
+                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide'));
+            }
+            $showicon = html_writer::link($showurl, $showicon);
+
+            $shareicon = '';
+            if (!$isuserchapter) { // Only for chapters without a userid.
+                if ($contrib->shared) {
+                    $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
+                    $shareicon = $OUTPUT->pix_icon('unshare', get_string('unshare', 'mod_giportfolio'), 'mod_giportfolio');
+                } else {
+                    $shareurl = new moodle_url($baseurl, array('action' => 'share', 'sesskey' => sesskey()));
+                    $shareicon = $OUTPUT->pix_icon('share', get_string('share', 'mod_giportfolio'), 'mod_giportfolio');
+                }
+                $shareicon = html_writer::link($shareurl, $shareicon);
+            }
+            $actions = array($editicon, $delicon, $showicon, $shareicon);
+            $userfullname = '';
         } else {
-            $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
-            $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide'));
+            $actions = array(); // No actions when viewing another user's contribution.
+            $userfullname = $otherusers[$contrib->userid].': ';
         }
-        $showicon = html_writer::link($showurl, $showicon);
 
-        $actions = array($editicon, $delicon, $showicon);
-        echo '<strong>'.format_string($contrib->title).'</strong>  '.implode(' ', $actions).'</br>';
-        echo date('l jS F Y', $contrib->timemodified);
-        echo '</br></br>';
+        $cout = '';
+        $cout .= $userfullname.'<strong>'.format_string($contrib->title).'</strong>  '.implode(' ', $actions).'<br>';
+        $cout .= date('l jS F Y', $contrib->timemodified);
+        $cout .= '<br><br>';
         $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                     'contribution', $contrib->id);
 
-        echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
+        $cout .= format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
 
-        echo '</br>';
+        $cout .= '<br>';
         $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
         if ($files) {
-            echo "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
-            echo $files;
-            echo "</td></tr></table>\n";
+            $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
+            $cout .= $files;
+            $cout .= "</td></tr></table>\n";
         }
-        echo '</br>';
+        $cout .= '<br>';
 
-        $commentopts->itemid = $contrib->id;
-        $commentbox = new comment($commentopts);
-        echo $commentbox->output();
+        if ($ismine) {
+            $commentopts->itemid = $contrib->id;
+            $commentbox = new comment($commentopts);
+            $cout .= $commentbox->output();
+            $cout .= '<br>';
+        }
 
-        echo '</br>';
-        echo '</br>';
+        $class = 'giportfolio-contribution';
+        $class .= $ismine ? ' mine' : ' notmine';
+        echo html_writer::tag('article', $cout, array('class' => $class));
     }
 }
 // SYNERGY.
 echo $OUTPUT->box_end();
-echo '</br>';
+echo '<br>';
 // Lower navigation.
 echo '<div class="navbottom">'.$chnavigation.'</div>';
 

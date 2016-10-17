@@ -39,13 +39,13 @@ require_sesskey();
 
 $context = context_module::instance($cm->id);
 
-$chapter = $DB->get_record('giportfolio_userchapters', array(
+$chapter = $DB->get_record('giportfolio_chapters', array(
                                                             'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                            'iduser' => $USER->id
+                                                            'userid' => $USER->id
                                                        ), '*', MUST_EXIST);
 
-$oldchapters = $DB->get_records('giportfolio_userchapters', array(
-                                                                 'giportfolioid' => $giportfolio->id, 'iduser' => $USER->id
+$oldchapters = $DB->get_records('giportfolio_chapters', array(
+                                                                 'giportfolioid' => $giportfolio->id, 'userid' => $USER->id
                                                             ), 'pagenum', 'id, pagenum, subchapter');
 
 $lastpage = giportfolio_get_last_chapter($giportfolio->id);
@@ -179,12 +179,12 @@ if (!$nothing) {
     $i = ($lastpage->pagenum + 1);
     foreach ($newchapters as $ch) {
         $ch->pagenum = $i;
-        $DB->update_record('giportfolio_userchapters', $ch);
+        $DB->update_record('giportfolio_chapters', $ch);
         $i++;
     }
 }
 
-giportfolio_preload_userchapters($giportfolio, $USER->id); // Fix structure.
+giportfolio_preload_userchapters($giportfolio); // Fix structure.
 
 redirect('viewgiportfolio.php?id='.$cm->id.'&chapterid='.$chapter->id.'&useredit=1');
 

@@ -403,6 +403,110 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2013071700, 'giportfolio');
     }
 
+    if ($oldversion < 2015061600) {
+
+        // Define field skipintro to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('skipintro', XMLDB_TYPE_INTEGER, '4', null, null, null, '0');
+
+        // Conditionally launch add field skipintro.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2015061600, 'giportfolio');
+    }
+
+    if ($oldversion < 2015061601) {
+
+        // Define field myactivitylink to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('myactivitylink', XMLDB_TYPE_INTEGER, '4', null, null, null, '1');
+
+        // Conditionally launch add field myactivitylink.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2015061601, 'giportfolio');
+    }
+
+    if ($oldversion < 2015061701) {
+
+        // Define field shared to be added to giportfolio_contributions.
+        $table = new xmldb_table('giportfolio_contributions');
+        $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'userid');
+
+        // Conditionally launch add field shared.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2015061701, 'giportfolio');
+    }
+
+    if ($oldversion < 2015061702) {
+
+        // Define field userid to be added to giportfolio_chapters.
+        $table = new xmldb_table('giportfolio_chapters');
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'importsrc');
+
+        // Conditionally launch add field userid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define key userid (foreign) to be added to giportfolio_chapters.
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+
+        // Launch add key userid.
+        $dbman->add_key($table, $key);
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2015061702, 'giportfolio');
+    }
+
+    if ($oldversion < 2015061703) {
+        require_once($CFG->dirroot.'/mod/giportfolio/db/upgradelib.php');
+
+        mtrace('Migrating Portfolio user chapters - this may take a long time if there are a lot of user chapters');
+        mod_giportfolio_migrate_userchapters();
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2015061703, 'giportfolio');
+    }
+
+    if ($oldversion < 2015061704) {
+        // Define field klassenbuchtrainer to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('klassenbuchtrainer', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'myactivitylink');
+
+        // Conditionally launch add field klassenbuchtrainer.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2015061704, 'giportfolio');
+    }
+
+    if ($oldversion < 2015090300) {
+
+        // Define field newentrynotification to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('automaticgrading', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'notifyaddentry');
+
+        // Conditionally launch add field newentrynotification.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2015090300, 'giportfolio');
+    }
     // SYNERGY - end add new fields to database.
 
     return true;
