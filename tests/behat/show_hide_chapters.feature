@@ -54,7 +54,7 @@ Feature: Portfolio activity chapter visibility management
   Scenario: Show/hide chapters and subchapters
     When I click on "Hide" "link" in the "2 Second chapter" "list_item"
     And I click on "Hide" "link" in the "2 Third chapter" "list_item"
-    And I follow "Turn editing off"
+    And I navigate to "Turn editing off" node in "Portfolio administration"
     And I am on homepage
     And I follow "Course 1"
     And I follow "Test giportfolio"
@@ -67,7 +67,7 @@ Feature: Portfolio activity chapter visibility management
     And I follow "Test giportfolio"
     And I press "View/Edit portfolio template"
     And I should see "First chapter" in the ".giportfolio_content" "css_element"
-    And I follow "Turn editing on"
+    And I navigate to "Turn editing on" node in "Portfolio administration"
     And I follow "Next"
     And I should see "Second chapter" in the ".giportfolio_content" "css_element"
     And I should not see "Exit portfolio"

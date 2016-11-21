@@ -20,7 +20,7 @@ Feature: SYNERGY LEARNING the 'collapse subchapter' setting starts the chapter t
     And I follow "Course 1"
     And I follow "Portfolio 1"
     And I press "View/Edit portfolio template"
-    And I follow "Turn editing on"
+    And I navigate to "Turn editing on" node in "Portfolio administration"
     And I click on "Edit" "link" in the "1 Chapter1" "list_item"
     And I set the following fields to these values:
       | Chapter title | Chapter 1   |
@@ -93,7 +93,7 @@ Feature: SYNERGY LEARNING the 'collapse subchapter' setting starts the chapter t
     Given I log in as "teacher1"
     And I follow "Course 1"
     And I follow "Portfolio 1"
-    And I follow "Edit settings"
+    And I navigate to "Edit settings" node in "Portfolio administration"
     And I set the following fields to these values:
       | Collapse subchapters | Yes |
     And I press "Save and return to course"
