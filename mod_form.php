@@ -82,6 +82,15 @@ class mod_giportfolio_mod_form extends moodleform_mod {
 
         // SYNERGY - add collapsesubchapters option to settings.
         $mform->addElement('selectyesno', 'collapsesubchapters', get_string('collapsesubchapters', 'giportfolio'));
+        
+        // add peersharing option to settings
+        $mform->addElement('selectyesno', 'peersharing', get_string('peersharing', 'giportfolio'));
+        $mform->setDefault('peersharing', 1);
+        
+        // add display hour/minute to dates
+        $mform->addElement('selectyesno', 'timeofday', get_string('showtimeofday', 'giportfolio'));
+        $mform->setDefault('timeofday', 0);
+        
         $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'giportfolio'));
         $mform->setDefault('participantadd', 1);
 

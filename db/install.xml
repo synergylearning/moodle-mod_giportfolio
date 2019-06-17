@@ -19,6 +19,8 @@
         <FIELD NAME="collapsesubchapters" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="grade" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="grade"/>
         <FIELD NAME="printing" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores printing status"/>
+        <FIELD NAME="peersharing" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Students can share contributions with other students"/>
+        <FIELD NAME="timeofday" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Dates show hour/minute of the day"/>
         <FIELD NAME="participantadd" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="particpant can add chapters"/>
         <FIELD NAME="chapternumber" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores the number of chapters for each giportfolio activity"/>
         <FIELD NAME="publishnotification" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="send notification on publish"/>

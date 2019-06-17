@@ -509,5 +509,27 @@ function xmldb_giportfolio_upgrade($oldversion) {
     }
     // SYNERGY - end add new fields to database.
 
+    if ($oldversion < 2019061500) {
+    
+    	// Define field peersharing to be added to giportfolio.
+    	$table = new xmldb_table('giportfolio');
+    	$peersharing_field = new xmldb_field('peersharing', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
+    
+    	// Conditionally launch add field peersharing.
+    	if (!$dbman->field_exists($table, $peersharing_field)) {
+    		$dbman->add_field($table, $peersharing_field);
+    	}
+    	 
+    	// Conditionally launch add field showtimeofday.
+    	$timeofday_field = new xmldb_field('timeofday', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
+    	if (!$dbman->field_exists($table, $timeofday_field)) {
+    		$dbman->add_field($table, $timeofday_field);
+    	}
+    	
+    	// Giportfolio savepoint reached.
+    	upgrade_mod_savepoint(true, 2019061500, 'giportfolio');
+    }
+    
+    
     return true;
 }

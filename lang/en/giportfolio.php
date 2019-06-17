@@ -91,6 +91,7 @@ $string['giportfolio:viewhiddenchapters'] = 'View hidden portfolio chapters';
 $string['giportfolioof'] = 'Portfolio Of: ';
 $string['gradesupdated'] = '...Grades updated...';
 $string['gradeupdated'] = 'Grade Updated ';
+$string['hide'] = 'Hide your contribution from everyone, including faculty';
 $string['hideshared'] = 'Hide other students\' contributions';
 $string['insertgrade'] = 'Grade Portfolio';
 $string['klassenbuchtrainer'] = 'Klassenbuch trainer mode';
@@ -136,6 +137,8 @@ $string['optionalsettings'] = 'Optional settings';
 $string['page-mod-giportfolio-x'] = 'Any portfolio module page';
 $string['pagesize'] = 'Submissions shown per page';
 $string['participantadd'] = 'Participants can add Chapters';
+$string['peersharing'] = 'Participants can share contributions with other participants';
+$string['peersharing_help'] = 'If enabled, participants can share contributions with others';
 $string['pluginadministration'] = 'Portfolio administration';
 $string['pluginname'] = 'Portfolio';
 $string['printing'] = 'Disable Printing';
@@ -148,7 +151,9 @@ $string['quickgrade'] = 'Allow quick grading';
 $string['quickgrade_help'] = 'If enabled, multiple assignments can be graded on one page. Add grades and comments then click the "Save all my feedback" button to save all changes for that page.';
 $string['saveallfeedback'] = 'Save all';
 $string['share'] = 'Share with other students';
+$string['show'] = 'Show your contribution to faculty only, not students';
 $string['showshared'] = 'Show other students\' contributions';
+$string['showtimeofday'] = 'Show time of day on dates';
 $string['noshared'] = 'No contributions from other students';
 $string['sincelastlogin'] = 'Updated since your last login';
 $string['skipintro'] = 'Students skip intro page';
@@ -173,3 +178,8 @@ $string['view'] = 'View';
 $string['viewgiportfolio'] = 'View Portfolio:  ';
 $string['viewtemplate'] = 'View/Edit portfolio template';
 $string['visibility'] = 'Visibility';
+$string['visibilityexplain'] = 'setting visibility for the contribution';
+$string['visibilityexplain_help'] = '
+* Show - contribution is visible to non-students
+* Hide - contribution is visible only to yourself
+';

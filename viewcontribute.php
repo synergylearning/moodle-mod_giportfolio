@@ -224,7 +224,10 @@ if ($contriblist) {
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                          'contribution', $contrib->id);
             echo '<strong>'.$contribtitle.'</strong></br>';
-            echo date('l jS F Y', $contrib->timemodified);
+            echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+            if($contrib->timecreated !== $contrib->timemodified) {
+            	echo '<br/><i>Last modified on '.date('l jS F Y'.($giportfolio->timeofday ? ' \a\t h:i A' : ''), $contrib->timemodified).'</i>';
+            }
             echo '</br></br>';
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);

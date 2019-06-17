@@ -256,8 +256,9 @@ if (!$allowedit) {
     $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
     echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
 }
-if (!$isuserchapter) {
-    // If this is not a user chapter, display a button to show/hide other users' shared contributions.
+if (!$isuserchapter && $giportfolio->peersharing) {
+    // If this is not a user chapter, display a button to show/hide other users' shared contributions,
+    // as long as peersharing is enabled.
     if ($showshared) {
         $hidesharedurl = new moodle_url($PAGE->url, array('showshared' => 0));
         echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio'), 'GET');
@@ -325,15 +326,15 @@ if ($contriblist) {
 
             if ($contrib->hidden) {
                 $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->pix_icon('t/show', get_string('show'));
+                $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'mod_giportfolio'));
             } else {
                 $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide'));
+                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
             }
             $showicon = html_writer::link($showurl, $showicon);
 
             $shareicon = '';
-            if (!$isuserchapter) { // Only for chapters without a userid.
+            if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
                 if ($contrib->shared) {
                     $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
                     $shareicon = $OUTPUT->pix_icon('unshare', get_string('unshare', 'mod_giportfolio'), 'mod_giportfolio');
@@ -345,14 +346,21 @@ if ($contriblist) {
             }
             $actions = array($editicon, $delicon, $showicon, $shareicon);
             $userfullname = '';
+        } else if($giportfolio->peersharing) {
+        	$actions = array(); // No actions when viewing another user's contribution.
+        	$userfullname = $otherusers[$contrib->userid].': ';
         } else {
-            $actions = array(); // No actions when viewing another user's contribution.
-            $userfullname = $otherusers[$contrib->userid].': ';
+        	// Do not show contribution if peersharing is disabled, even if the contribution was previously shared
+        	continue;
         }
-
+        
         $cout = '';
         $cout .= $userfullname.'<strong>'.format_string($contrib->title).'</strong>  '.implode(' ', $actions).'<br>';
-        $cout .= date('l jS F Y', $contrib->timemodified);
+        $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' \a\t h:i A' : ''), $contrib->timecreated);
+        if($contrib->timecreated !== $contrib->timemodified) {
+        	$cout .= '<br/><i>Last modified on '.date('l jS F Y'.($giportfolio->timeofday ? ' \a\t h:i A' : ''), $contrib->timemodified).'</i>';
+        }
+        
         $cout .= '<br><br>';
         $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                     'contribution', $contrib->id);
