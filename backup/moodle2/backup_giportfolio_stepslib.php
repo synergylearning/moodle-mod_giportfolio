@@ -39,7 +39,7 @@ class backup_giportfolio_activity_structure_step extends backup_activity_structu
                                                  array('name', 'intro', 'introformat', 'numbering', 'customtitles',
                                                       'timecreated', 'timemodified', 'collapsesubchapters', 'grade', 'printing',
                                                       'participantadd', 'chapternumber', 'publishnotification', 'notifyaddentry',
-                                                      'automaticgrading', 'skipintro', 'myactivitylink'));
+                                                      'automaticgrading', 'skipintro', 'myactivitylink', 'peersharing', 'timeofday'));
         $chapters = new backup_nested_element('chapters');
         $chapter = new backup_nested_element('chapter', array('id'),
                                              array('pagenum', 'subchapter', 'title', 'content', 'contentformat', 'hidden',
