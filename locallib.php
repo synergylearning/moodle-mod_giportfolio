@@ -433,31 +433,31 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
             if ($i != 1) {
                 $toc .= ' <a title="'.get_string('up').'" href="move.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
                     '&amp;up=1&amp;sesskey='.$USER->sesskey.'">
-                    <img src="'.$OUTPUT->pix_url('t/up').'" class="iconsmall" alt="'.get_string('up').'" /></a>';
+                    <img src="'.$OUTPUT->pix_icon('t/up').'" class="iconsmall" alt="'.get_string('up').'" /></a>';
             }
             if ($i != count($chapters)) {
                 $toc .= ' <a title="'.get_string('down').'" href="move.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
                     '&amp;up=0&amp;sesskey='.$USER->sesskey.'">
-                    <img src="'.$OUTPUT->pix_url('t/down').'" class="iconsmall" alt="'.get_string('down').'" /></a>';
+                    <img src="'.$OUTPUT->pix_icon('t/down').'" class="iconsmall" alt="'.get_string('down').'" /></a>';
             }
             $toc .= ' <a title="'.get_string('edit').'" href="edit.php?cmid='.$cm->id.'&amp;id='.$ch->id.'">
-            <img src="'.$OUTPUT->pix_url('t/edit').'" class="iconsmall" alt="'.get_string('edit').'" /></a>';
+            <img src="'.$OUTPUT->pix_icon('t/edit').'" class="iconsmall" alt="'.get_string('edit').'" /></a>';
             $toc .= ' <a title="'.get_string('delete').'" href="delete.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
                 '&amp;sesskey='.$USER->sesskey.'">
-                <img src="'.$OUTPUT->pix_url('t/delete').'" class="iconsmall" alt="'.get_string('delete').'" /></a>';
+                <img src="'.$OUTPUT->pix_icon('t/delete').'" class="iconsmall" alt="'.get_string('delete').'" /></a>';
             if ($ch->hidden) {
                 $toc .= ' <a title="'.get_string('show').'" href="show.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
                     '&amp;sesskey='.$USER->sesskey.'">
-                    <img src="'.$OUTPUT->pix_url('t/show').'" class="iconsmall" alt="'.get_string('show').'" /></a>';
+                    <img src="'.$OUTPUT->pix_icon('t/show').'" class="iconsmall" alt="'.get_string('show').'" /></a>';
             } else {
                 $toc .= ' <a title="'.get_string('hide').'" href="show.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
                     '&amp;sesskey='.$USER->sesskey.'">
-                    <img src="'.$OUTPUT->pix_url('t/hide').'" class="iconsmall" alt="'.get_string('hide').'" /></a>';
+                    <img src="'.$OUTPUT->pix_icon('t/hide').'" class="iconsmall" alt="'.get_string('hide').'" /></a>';
             }
             // Synergy  only if the giportfolio activity has not yet contributions.
             $toc .= ' <a title="'.get_string('addafter', 'mod_giportfolio').'" href="edit.php?cmid='.$cm->id.
                 '&amp;pagenum='.$ch->pagenum.'&amp;subchapter='.$ch->subchapter.'">
-                <img src="'.$OUTPUT->pix_url('add', 'mod_giportfolio').'" class="iconsmall" alt="'.
+                <img src="'.$OUTPUT->pix_icon('add', 'mod_giportfolio').'" class="iconsmall" alt="'.
                 get_string('addafter', 'mod_giportfolio').'" /></a>';
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = 0;
@@ -630,26 +630,26 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                     if (!giportfolio_get_first_userchapter($giportfolio->id, $ch->id, $userid)) {
                         $toc .= ' <a title="'.get_string('up').'" href="moveuserchapter.php?id='.$cm->id.
                             '&amp;chapterid='.$ch->id.'&amp;up=1&amp;sesskey='.$USER->sesskey.'">
-                            <img src="'.$OUTPUT->pix_url('t/up').'" class="iconsmall" alt="'.get_string('up').'" /></a>';
+                            <img src="'.$OUTPUT->pix_icon('t/up').'" class="iconsmall" alt="'.get_string('up').'" /></a>';
 
                     }
                 }
                 if ($i != count($chapters)) {
                     $toc .= ' <a title="'.get_string('down').'" href="moveuserchapter.php?id='.$cm->id.
                         '&amp;chapterid='.$ch->id.'&amp;up=0&amp;sesskey='.$USER->sesskey.'">
-                        <img src="'.$OUTPUT->pix_url('t/down').'" class="iconsmall" alt="'.get_string('down').'" /></a>';
+                        <img src="'.$OUTPUT->pix_icon('t/down').'" class="iconsmall" alt="'.get_string('down').'" /></a>';
                 }
             }
 
             if (giportfolio_check_user_chapter($ch, $userid)) {
                 $toc .= ' <a title="'.get_string('edit').'" href="editstudent.php?cmid='.$cm->id.'&amp;id='.$ch->id.'">
-                <img src="'.$OUTPUT->pix_url('t/edit').'" class="iconsmall" alt="'.get_string('edit').'" /></a>';
+                <img src="'.$OUTPUT->pix_icon('t/edit').'" class="iconsmall" alt="'.get_string('edit').'" /></a>';
             }
 
             if (giportfolio_check_user_chapter($ch, $userid)) {
                 $toc .= ' <a title="'.get_string('delete').'" href="deleteuserchapter.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
                     '&amp;sesskey='.$USER->sesskey.'">
-                    <img src="'.$OUTPUT->pix_url('t/delete').'" class="iconsmall" alt="'.get_string('delete').'" /></a>';
+                    <img src="'.$OUTPUT->pix_icon('t/delete').'" class="iconsmall" alt="'.get_string('delete').'" /></a>';
             }
 
             if (giportfolio_check_user_chapter($ch, $userid) ||
@@ -657,7 +657,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
 
                 $toc .= ' <a title="'.get_string('addafter', 'mod_giportfolio').'" href="editstudent.php?cmid='.$cm->id.
                     '&amp;pagenum='.$ch->pagenum.'&amp;subchapter='.$ch->subchapter.'">
-                    <img src="'.$OUTPUT->pix_url('add', 'mod_giportfolio').'" class="iconsmall" alt="'.
+                    <img src="'.$OUTPUT->pix_icon('add', 'mod_giportfolio').'" class="iconsmall" alt="'.
                     get_string('addafter', 'mod_giportfolio').'" /></a>';
             }
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';

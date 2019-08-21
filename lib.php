@@ -622,7 +622,7 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
         foreach ($files as $file) {
             $filename = $file->get_filename();
             $mimetype = $file->get_mimetype();
-            $iconimage = '<img src="'.$OUTPUT->pix_url(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
+            $iconimage = '<img src="'.$OUTPUT->pix_icon(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
             $path = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
                                                     $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 
