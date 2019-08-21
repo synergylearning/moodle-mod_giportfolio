@@ -521,7 +521,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
         $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio');
         $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id']));
         $giportfolionode->add($gradeconsole, $url, navigation_node::TYPE_SETTING, null, null,
-                              new pix_icon('console', '', 'giportfoliotool_print', array('class' => 'icon')));
+                              new image_url('console', '', 'giportfoliotool_print', array('class' => 'icon')));
     }
     // Add publish- unpublish links only if the user has at least one contribution.
 
@@ -538,14 +538,14 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
             // Open as new window.
             $action = new action_link($url, get_string('exportpdf', 'mod_giportfolio'), new popup_action('click', $url));
             $giportfolionode->add(get_string('exportpdf', 'mod_giportfolio'), $action, navigation_node::TYPE_SETTING, null, null,
-                                  new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon')));
+                                  new image_url('pdf', '', 'giportfoliotool_print', array('class' => 'icon')));
 
             // SYNERGY LEARNING - Export as zip option.
             $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array(
                 'id' => $params['id']
             )); // Add zip export link.
             $giportfolionode->add(get_string('exportzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null,
-                                  new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
+                                  new image_url('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
             // END SYNERGY LEARNING - Export as zip option.
         }
 
@@ -569,7 +569,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
                                                                            'sesskey' => sesskey(), 'useredit' => $edit
                                                                       ));
         $giportfolionode->add($tocedit, $url, navigation_node::TYPE_SETTING, null, null,
-                              new pix_icon('editstatus', '', 'giportfoliotool_print', array('class' => 'icon')));
+                              new image_url('editstatus', '', 'giportfoliotool_print', array('class' => 'icon')));
     }
 
     // SYNERGY.
@@ -622,7 +622,7 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
         foreach ($files as $file) {
             $filename = $file->get_filename();
             $mimetype = $file->get_mimetype();
-            $iconimage = '<img src="'.$OUTPUT->pix_url(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
+            $iconimage = '<img src="'.$OUTPUT->image_url(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
             $path = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
                                                     $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 

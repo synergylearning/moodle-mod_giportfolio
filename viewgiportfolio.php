@@ -169,15 +169,15 @@ $chnavigation = '';
 if ($previd) {
     $chnavigation .= '<a title="'.get_string('navprev', 'giportfolio').'" href="viewgiportfolio.php?id='.$cm->id.
         '&amp;chapterid='.$previd.'">
-        <img src="'.$OUTPUT->pix_url('nav_prev', 'mod_giportfolio').'" class="bigicon" alt="'.
+        <img src="'.$OUTPUT->pix_icon('nav_prev', 'mod_giportfolio').'" class="bigicon" alt="'.
         get_string('navprev', 'giportfolio').'"/></a>';
 } else {
-    $chnavigation .= '<img src="'.$OUTPUT->pix_url('nav_prev_dis', 'mod_giportfolio').'" class="bigicon" alt="" />';
+    $chnavigation .= '<img src="'.$OUTPUT->pix_icon('nav_prev_dis', 'mod_giportfolio').'" class="bigicon" alt="" />';
 }
 if ($nextid) {
     $chnavigation .= '<a title="'.get_string('navnext', 'giportfolio').'" href="viewgiportfolio.php?id='.$cm->id.
         '&amp;chapterid='.$nextid.'">
-        <img src="'.$OUTPUT->pix_url('nav_next', 'mod_giportfolio').'" class="bigicon" alt="'.
+        <img src="'.$OUTPUT->pix_icon('nav_next', 'mod_giportfolio').'" class="bigicon" alt="'.
         get_string('navnext', 'giportfolio').'" /></a>';
 } else {
     $sec = '';
@@ -190,7 +190,7 @@ if ($nextid) {
         $returnurl = "$CFG->wwwroot/course/view.php?id=$course->id#section-$sec";
     }
     $chnavigation .= '<a title="'.get_string('navexit', 'giportfolio').'" href="'.$returnurl.'">
-    <img src="'.$OUTPUT->pix_url('nav_exit', 'mod_giportfolio').'" class="bigicon" alt="'.
+    <img src="'.$OUTPUT->pix_icon('nav_exit', 'mod_giportfolio').'" class="bigicon" alt="'.
         get_string('navexit', 'giportfolio').'" /></a>';
 
     // We are cheating a bit here, viewing the last page means user has viewed the whole giportfolio.
@@ -358,7 +358,7 @@ if ($contriblist) {
         $cout .= $userfullname.'<strong>'.format_string($contrib->title).'</strong>  '.implode(' ', $actions).'<br>';
         $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' \a\t h:i A' : ''), $contrib->timecreated);
         if($contrib->timecreated !== $contrib->timemodified) {
-        	$cout .= '<br/><i>Last modified on '.date('l jS F Y'.($giportfolio->timeofday ? ' \a\t h:i A' : ''), $contrib->timemodified).'</i>';
+        	$cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
         }
         
         $cout .= '<br><br>';

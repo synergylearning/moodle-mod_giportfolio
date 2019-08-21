@@ -98,6 +98,7 @@ $string['klassenbuchtrainer'] = 'Klassenbuch trainer mode';
 $string['klassenbuchtrainer_help'] = 'Enabling this will display the Klassenbuch \'class plan\' feature within each chapter of the portfolio.<br>
 This feature can only be selected when the activity is first created.';
 $string['lastgrade'] = 'Graded ';
+$string['lastmodified'] = 'Last Modified:  ';
 $string['lastupdated'] = 'Last Updated:  ';
 $string['messageprovider:addentry'] = 'Notification of new Portfolio entries';
 $string['modulename'] = 'Portfolio';
