@@ -477,7 +477,7 @@ function giportfolio_supports($feature) {
         case FEATURE_BACKUP_MOODLE2:
             return true;
         case FEATURE_ADVANCED_GRADING:
-            return true;
+            return false;
         case FEATURE_COMPLETION_HAS_RULES:
             return false;
 

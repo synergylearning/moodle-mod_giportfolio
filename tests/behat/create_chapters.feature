@@ -15,7 +15,7 @@ Feature: In a giportfolio, create chapters and sub chapters
       | user | course | role |
       | teacher1 | C1 | editingteacher |
     And I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I turn editing mode on
     And I add a "Portfolio" to section "1" and I fill the form with:
       | Name | Test giportfolio |
@@ -75,7 +75,7 @@ Feature: In a giportfolio, create chapters and sub chapters
     And "Delete" "link" should exist in the "1 Dummy first chapter" "list_item"
     And "Hide" "link" should exist in the "1 Dummy first chapter" "list_item"
     And "Add new chapter" "link" should exist in the "1 Dummy first chapter" "list_item"
-    When I click on "Turn editing off" "link" in the "Administration" "block"
+    When I turn editing mode off
     Then "Edit" "link" should not exist in the "1 Dummy first chapter" "list_item"
     And "Delete" "link" should not exist in the "1 Dummy first chapter" "list_item"
     And "Hide" "link" should not exist in the "1 Dummy first chapter" "list_item"

@@ -17,10 +17,10 @@ Feature: SYNERGY LEARNING the 'collapse subchapter' setting starts the chapter t
       | activity | name   | idnumber | course |
       | giportfolio     | Portfolio 1 | giportfolio1    | C1     |
     And I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Portfolio 1"
     And I press "View/Edit portfolio template"
-    And I navigate to "Turn editing on" node in "Portfolio administration"
+    And I turn editing mode on
     And I click on "Edit" "link" in the "1 Chapter1" "list_item"
     And I set the following fields to these values:
       | Chapter title | Chapter 1   |
@@ -62,7 +62,7 @@ Feature: SYNERGY LEARNING the 'collapse subchapter' setting starts the chapter t
   @javascript
   Scenario: Without 'collapse subchapter' all the chapters are shown
     When I log in as "student1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Portfolio 1"
     And I press "Start Contributing"
     Then "Chapter 1" "text" in the ".giportfolio_toc_numbered" "css_element" should be visible
@@ -91,16 +91,16 @@ Feature: SYNERGY LEARNING the 'collapse subchapter' setting starts the chapter t
   @javascript
   Scenario: With the 'collapse subchapter', only the current chapter is shown, by default
     Given I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Portfolio 1"
-    And I navigate to "Edit settings" node in "Portfolio administration"
+    And I navigate to "Edit settings" in current page administration
     And I set the following fields to these values:
       | Collapse subchapters | Yes |
     And I press "Save and return to course"
     And I log out
 
     When I log in as "student1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Portfolio 1"
     And I press "Start Contributing"
     Then "Chapter 1" "text" in the ".giportfolio_toc_numbered" "css_element" should be visible
