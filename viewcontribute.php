@@ -145,7 +145,7 @@ if ($previd) {
         <img src="'.$OUTPUT->image_url('nav_prev', 'mod_giportfolio').'" class="bigicon" alt="'.
         get_string('navprev', 'giportfolio').'"/></a>';
 } else {
-	$chnavigation .= '<img src="'.$OUTPUT->image_url('nav_prev_dis', 'mod_giportfolio').'" class="bigicon" alt="" />';
+    $chnavigation .= '<img src="'.$OUTPUT->image_url('nav_prev_dis', 'mod_giportfolio').'" class="bigicon" alt="" />';
 }
 if ($nextid) {
     $chnavigation .= '<a title="'.get_string('navnext', 'giportfolio').'" href="viewcontribute.php?id='.$cm->id.
@@ -225,8 +225,8 @@ if ($contriblist) {
                                                          'contribution', $contrib->id);
             echo '<strong>'.$contribtitle.'</strong></br>';
             echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
-            if($contrib->timecreated !== $contrib->timemodified) {
-            	echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
+            if ($contrib->timecreated !== $contrib->timemodified) {
+                echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
             }
             echo '</br></br>';
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
