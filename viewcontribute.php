@@ -203,7 +203,6 @@ $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giport
 $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                             'chapter', $chapter->id);
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
-echo '</br></br>';
 
 if ($contriblist) {
     comment::init();
@@ -221,6 +220,7 @@ if ($contriblist) {
     $align = 'right';
     foreach ($contriblist as $contrib) {
         if (!$contrib->hidden) {
+			echo $OUTPUT->box_start('giportfolio-contribution');
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                          'contribution', $contrib->id);
             echo '<strong>'.$contribtitle.'</strong></br>';
@@ -245,9 +245,7 @@ if ($contriblist) {
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
             echo $commentbox->output();
-
-            echo '</br>';
-            echo '</br>';
+            echo $OUTPUT->box_end();
         }
     }
 }
