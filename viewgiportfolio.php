@@ -317,19 +317,19 @@ if ($contriblist) {
                                       array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid));
 
             $editurl = new moodle_url($baseurl);
-            $editicon = $OUTPUT->image_url('t/edit', get_string('edit'));
+            $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
             $editicon = html_writer::link($editurl, $editicon);
 
             $delurl = new moodle_url($baseurl, array('action' => 'delete'));
-            $delicon = $OUTPUT->image_url('t/delete', get_string('delete'));
+            $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $delicon = html_writer::link($delurl, $delicon);
 
             if ($contrib->hidden) {
                 $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->image_url('t/show', get_string('show', 'mod_giportfolio'));
+                $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'mod_giportfolio'));
             } else {
                 $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->image_url('t/hide', get_string('hide', 'mod_giportfolio'));
+                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
             }
             $showicon = html_writer::link($showurl, $showicon);
 
@@ -337,10 +337,10 @@ if ($contriblist) {
             if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
                 if ($contrib->shared) {
                     $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
-                    $shareicon = $OUTPUT->image_url('unshare', get_string('unshare', 'mod_giportfolio'), 'mod_giportfolio');
+                    $shareicon = $OUTPUT->pix_icon('unshare', get_string('unshare', 'mod_giportfolio'), 'mod_giportfolio');
                 } else {
                     $shareurl = new moodle_url($baseurl, array('action' => 'share', 'sesskey' => sesskey()));
-                    $shareicon = $OUTPUT->image_url('share', get_string('share', 'mod_giportfolio'), 'mod_giportfolio');
+                    $shareicon = $OUTPUT->pix_icon('share', get_string('share', 'mod_giportfolio'), 'mod_giportfolio');
                 }
                 $shareicon = html_writer::link($shareurl, $shareicon);
             }
