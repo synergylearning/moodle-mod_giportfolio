@@ -231,18 +231,16 @@ if ($mform->is_cancelled()) {
             $info->link = html_writer::link($url, $url->out(false));
             $messagehtml = nl2br(get_string('notifyaddentry_body', 'mod_giportfolio', $info));
 
-            $eventdata = (object)array(
-                'component' => 'mod_giportfolio',
-                'name' => 'addentry',
-                'userfrom' => get_admin(),
-                'userto' => null, // To fill in below.
-                'subject' => $subj,
-                'fullmessage' => $messagetext,
-                'fullmessageformat' => FORMAT_PLAIN,
-                'fullmessagehtml' => $messagehtml,
-                'smallmessage' => $messagetext,
-            );
-
+            $eventdata = new \core\message\message();
+            $eventdata->component = 'mod_giportfolio';
+            $eventdata->name = 'addentry';
+            $eventdata->userfrom = get_admin();
+            $eventdata->userto = null; // To fill in below.
+            $eventdata->subject = $subj;
+            $eventdata->fullmessage = $messagetext;
+            $eventdata->fullmessageformat = FORMAT_PLAIN;
+            $eventdata->fullmessagehtml = $messagehtml;
+            $eventdata->smallmessage = $messagetext;
             foreach ($graders as $grader) {
                 $eventdata->userto = $grader;
                 message_send($eventdata);
