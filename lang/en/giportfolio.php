@@ -32,6 +32,7 @@ $string['attachment'] = 'Attachments';
 $string['automaticgrading'] = 'Automatic grading';
 $string['chapternumber'] = 'Number of Chapters:  ';
 $string['chapternumberinit'] = 'Initial number of Chapters:  ';
+$string['chapter'] = 'Chapter';
 $string['chapters'] = 'Chapters';
 $string['chapterscount'] = 'Chapters';
 $string['chaptertitle'] = 'Chapter title';

@@ -32,6 +32,7 @@ $string['attachment'] = 'Вложения';
 $string['automaticgrading'] = 'Автоматическое оценивание';
 $string['chapternumber'] = 'Количество разделов:  ';
 $string['chapternumberinit'] = 'Начальное количество разделов:  ';
+$string['chapter'] = 'Раздел';
 $string['chapters'] = 'Разделы';
 $string['chapterscount'] = 'Разделы';
 $string['chaptertitle'] = 'Название раздела';
