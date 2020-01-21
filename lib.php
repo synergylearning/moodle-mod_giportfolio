@@ -85,8 +85,8 @@ function giportfolio_add_instance($giportfolio, $mform) {
             $initchapter->giportfolioid = $giportfolio->id;
             $initchapter->pagenum = $ch + 1;
             $initchapter->subchapter = 0;
-            $initchapter->title = $chapter_str.($ch + 1);
-            $initchapter->content = '<p>'.$addcontent_str.'</p><hr /><p></p>';
+            $initchapter->title = "$chapter_str ".($ch + 1);
+            $initchapter->content = "<p>$addcontent_str</p><hr /><p></p>";
             $initchapter->contentformat = '1';
             $initchapter->hidden = '0';
             $initchapter->timecreated = time();
