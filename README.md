@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details: http://www.gnu.org/copyleft/gpl.html
 
 Changes:
-
+* 2020-01-22 - Russian language support
 * 2016-11-21 - Minor M3.2 compatibility fix (only behat affected)
 * 2016-10-17 - Fix M3.1 compatibility, add various small features (zip export, link to activity report now optional, optional contribution sharing, option to skip the intro page, automatic gradebook grade on submission, fix bug in handling of user chapters vs standard chapters).
 * 2013-11-13 - Global setting to display 'contribution count' on the course page (off by default)

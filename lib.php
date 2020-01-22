@@ -77,13 +77,15 @@ function giportfolio_add_instance($giportfolio, $mform) {
     $giportfolio->id = $DB->insert_record('giportfolio', $giportfolio);
 
     if ($giportfolio) {
+        $addcontent = get_string('addcontent', 'mod_giportfolio');
+        
         for ($ch = 0; $ch < $giportfolio->chapternumber; $ch++) {
             $initchapter = new stdClass();
             $initchapter->giportfolioid = $giportfolio->id;
             $initchapter->pagenum = $ch + 1;
             $initchapter->subchapter = 0;
-            $initchapter->title = 'Chapter'.($ch + 1);
-            $initchapter->content = '<p>'.get_string('addcontent', 'mod_giportfolio').'</p><hr><p></p>';
+            $initchapter->title = get_string('chapter', 'mod_giportfolio', ($ch + 1));
+            $initchapter->content = "<p>{$addcontent}</p><hr /><p></p>";
             $initchapter->contentformat = '1';
             $initchapter->hidden = '0';
             $initchapter->timecreated = time();
