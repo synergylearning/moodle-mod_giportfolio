@@ -42,21 +42,21 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         $mform->addElement('hidden', 'contributionid', 0);
         $mform->setType('contributionid', PARAM_INT);
 
-        $mform->addElement('header', 'contribheader', get_string('contribmodform', 'giportfolio'));
-        $mform->addElement('text', 'title', get_string('contributiontitle', 'giportfolio'));
+        $mform->addElement('header', 'contribheader', get_string('contribmodform', 'mod_giportfolio'));
+        $mform->addElement('text', 'title', get_string('contributiontitle', 'mod_giportfolio'));
         $mform->addRule('title', get_string('required'), 'required', null, 'client');
         $mform->setType('title', PARAM_TEXT);
 
         $opts = array(0 => get_string('show'), 1 => get_string('hide'));
-        $mform->addElement('select', 'hidden', get_string('visibility', 'giportfolio'), $opts, 0);
+        $mform->addElement('select', 'hidden', get_string('visibility', 'mod_giportfolio'), $opts, 0);
         $mform->addHelpButton('hidden', 'visibilityexplain', 'giportfolio');
 
         $mform->addElement('editor', 'content_editor', get_string('content', 'mod_giportfolio'), null, $editoroptions);
         $mform->addRule('content_editor', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement('filemanager', 'attachment_filemanager', get_string('attachment', 'giportfolio'),
+        $mform->addElement('filemanager', 'attachment_filemanager', get_string('attachment', 'mod_giportfolio'),
                            null, $attachmentoptions);
 
-        $this->add_action_buttons(true, get_string('updatecontrib', 'giportfolio'));
+        $this->add_action_buttons(true, get_string('updatecontrib', 'mod_giportfolio'));
     }
 }

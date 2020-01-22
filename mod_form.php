@@ -68,33 +68,33 @@ class mod_giportfolio_mod_form extends moodleform_mod {
                 }
             }
         }
-        $mform->addElement('select', 'numbering', get_string('numbering', 'giportfolio'), $options);
+        $mform->addElement('select', 'numbering', get_string('numbering', 'mod_giportfolio'), $options);
         $mform->addHelpButton('numbering', 'numbering', 'mod_giportfolio');
         $mform->setDefault('numbering', $config->numbering);
 
-        $mform->addElement('checkbox', 'printing', get_string('printing', 'giportfolio'));
+        $mform->addElement('checkbox', 'printing', get_string('printing', 'mod_giportfolio'));
         $mform->addHelpButton('printing', 'printing', 'mod_giportfolio');
         $mform->setDefault('printing', 0);
 
-        $mform->addElement('checkbox', 'customtitles', get_string('customtitles', 'giportfolio'));
+        $mform->addElement('checkbox', 'customtitles', get_string('customtitles', 'mod_giportfolio'));
         $mform->addHelpButton('customtitles', 'customtitles', 'mod_giportfolio');
         $mform->setDefault('customtitles', 0);
 
         // SYNERGY - add collapsesubchapters option to settings.
-        $mform->addElement('selectyesno', 'collapsesubchapters', get_string('collapsesubchapters', 'giportfolio'));
+        $mform->addElement('selectyesno', 'collapsesubchapters', get_string('collapsesubchapters', 'mod_giportfolio'));
         
         // add peersharing option to settings
-        $mform->addElement('selectyesno', 'peersharing', get_string('peersharing', 'giportfolio'));
+        $mform->addElement('selectyesno', 'peersharing', get_string('peersharing', 'mod_giportfolio'));
         $mform->setDefault('peersharing', 1);
         
         // add display hour/minute to dates
-        $mform->addElement('selectyesno', 'timeofday', get_string('showtimeofday', 'giportfolio'));
+        $mform->addElement('selectyesno', 'timeofday', get_string('showtimeofday', 'mod_giportfolio'));
         $mform->setDefault('timeofday', 0);
         
-        $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'giportfolio'));
+        $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'mod_giportfolio'));
         $mform->setDefault('participantadd', 1);
 
-        $mform->addElement('text', 'chapternumber', get_string('chapternumberinit', 'giportfolio'), 'Required');
+        $mform->addElement('text', 'chapternumber', get_string('chapternumberinit', 'mod_giportfolio'), 'Required');
         $mform->addRule('chapternumber', 'Required', 'required', null, 'client');
         $mform->setDefault('chapternumber', 1);
         $mform->setType('chapternumber', PARAM_INT);
@@ -102,23 +102,23 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addRule('chapternumber', 'add valid number', 'nonzero', null, 'client');
         $mform->addRule('chapternumber', 'add positive number', 'regex', '|^[1-9][0-9]*$|', 'client'); // Positive number.
 
-        $mform->addElement('checkbox', 'publishnotification', get_string('publishnotification', 'giportfolio'));
+        $mform->addElement('checkbox', 'publishnotification', get_string('publishnotification', 'mod_giportfolio'));
         $mform->setDefault('publishnotification', 0);
 
-        $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
+        $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'mod_giportfolio'));
         $mform->setDefault('newentrynotification', 0);
 
-        $mform->addElement('selectyesno', 'automaticgrading', get_string('automaticgrading', 'giportfolio'));
+        $mform->addElement('selectyesno', 'automaticgrading', get_string('automaticgrading', 'mod_giportfolio'));
         $mform->setDefault('automaticgrading', 0);
 
-        $mform->addElement('selectyesno', 'skipintro', get_string('skipintro', 'giportfolio'));
+        $mform->addElement('selectyesno', 'skipintro', get_string('skipintro', 'mod_giportfolio'));
         $mform->setDefault('skipintro', 0);
 
-        $mform->addElement('selectyesno', 'myactivitylink', get_string('myactivitylink', 'giportfolio'));
+        $mform->addElement('selectyesno', 'myactivitylink', get_string('myactivitylink', 'mod_giportfolio'));
         $mform->setDefault('myactivitylink', 1);
 
         if (giportfolio_include_klassenbuchtrainer()) {
-            $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));
+            $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'mod_giportfolio'));
             $mform->addHelpButton('klassenbuchtrainer', 'klassenbuchtrainer', 'mod_giportfolio');
             $mform->setDefault('klassenbuchtrainer', 0);
         } else {

@@ -152,8 +152,8 @@ $tableheaders = array_merge(
     array('', get_string('fullnameuser')),
     $extrafieldnames,
     array(
-         get_string('lastupdated', 'giportfolio'),
-         get_string('viewgiportfolio', 'giportfolio'),
+         get_string('lastupdated', 'mod_giportfolio'),
+         get_string('viewgiportfolio', 'mod_giportfolio'),
          get_string('grade'),
          get_string('feedback'),
     ));
@@ -355,14 +355,14 @@ $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', array('clas
 
 $mform->addElement('hidden', 'updatepref');
 $mform->setDefault('updatepref', 1);
-$mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'giportfolio'));
+$mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'mod_giportfolio'));
 
 $mform->setDefault('filter', $filter);
 
-$mform->addElement('text', 'perpage', get_string('pagesize', 'giportfolio'), array('size' => 1));
+$mform->addElement('text', 'perpage', get_string('pagesize', 'mod_giportfolio'), array('size' => 1));
 $mform->setDefault('perpage', $perpage);
 
-$mform->addElement('checkbox', 'quickgrade', get_string('quickgrade', 'giportfolio'));
+$mform->addElement('checkbox', 'quickgrade', get_string('quickgrade', 'mod_giportfolio'));
 $mform->setDefault('quickgrade', $quickgrade);
 $mform->addHelpButton('quickgrade', 'quickgrade', 'giportfolio');
 

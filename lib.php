@@ -614,7 +614,7 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
         return '';
     }
     $filecontext = $context;
-    $strattachment = get_string('attachment', 'giportfolio');
+    $strattachment = get_string('attachment', 'mod_giportfolio');
 
     $fs = get_file_storage();
 

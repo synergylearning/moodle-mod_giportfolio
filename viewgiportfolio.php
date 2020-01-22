@@ -167,18 +167,18 @@ foreach ($chapters as $ch) {
 
 $chnavigation = '';
 if ($previd) {
-    $chnavigation .= '<a title="'.get_string('navprev', 'giportfolio').'" href="viewgiportfolio.php?id='.$cm->id.
+    $chnavigation .= '<a title="'.get_string('navprev', 'mod_giportfolio').'" href="viewgiportfolio.php?id='.$cm->id.
         '&amp;chapterid='.$previd.'">
         <img src="'.$OUTPUT->image_url('nav_prev', 'mod_giportfolio').'" class="bigicon" alt="'.
-        get_string('navprev', 'giportfolio').'"/></a>';
+        get_string('navprev', 'mod_giportfolio').'"/></a>';
 } else {
     $chnavigation .= '<img src="'.$OUTPUT->image_url('nav_prev_dis', 'mod_giportfolio').'" class="bigicon" alt="" />';
 }
 if ($nextid) {
-    $chnavigation .= '<a title="'.get_string('navnext', 'giportfolio').'" href="viewgiportfolio.php?id='.$cm->id.
+    $chnavigation .= '<a title="'.get_string('navnext', 'mod_giportfolio').'" href="viewgiportfolio.php?id='.$cm->id.
         '&amp;chapterid='.$nextid.'">
         <img src="'.$OUTPUT->image_url('nav_next', 'mod_giportfolio').'" class="bigicon" alt="'.
-        get_string('navnext', 'giportfolio').'" /></a>';
+        get_string('navnext', 'mod_giportfolio').'" /></a>';
 } else {
     $sec = '';
     if ($section = $DB->get_record('course_sections', array('id' => $cm->section))) {
@@ -189,9 +189,9 @@ if ($nextid) {
     } else {
         $returnurl = "$CFG->wwwroot/course/view.php?id=$course->id#section-$sec";
     }
-    $chnavigation .= '<a title="'.get_string('navexit', 'giportfolio').'" href="'.$returnurl.'">
+    $chnavigation .= '<a title="'.get_string('navexit', 'mod_giportfolio').'" href="'.$returnurl.'">
     <img src="'.$OUTPUT->image_url('nav_exit', 'mod_giportfolio').'" class="bigicon" alt="'.
-        get_string('navexit', 'giportfolio').'" /></a>';
+        get_string('navexit', 'mod_giportfolio').'" /></a>';
 
     // We are cheating a bit here, viewing the last page means user has viewed the whole giportfolio.
     $completion = new completion_info($course);
