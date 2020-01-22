@@ -44,7 +44,7 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
 
         $mform->addElement('header', 'contribheader', get_string('contribmodform', 'giportfolio'));
         $mform->addElement('text', 'title', get_string('contributiontitle', 'giportfolio'));
-        $mform->addRule('title', 'Required', 'required', null, 'client');
+        $mform->addRule('title', get_string('required'), 'required', null, 'client');
         $mform->setType('title', PARAM_TEXT);
 
         $opts = array(0 => get_string('show'), 1 => get_string('hide'));

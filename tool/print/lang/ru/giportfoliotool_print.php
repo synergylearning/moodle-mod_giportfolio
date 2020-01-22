@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of giportfolio plugin for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,15 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Local language pack from http://goethe2.staging.synergy-learning.com
+ * giportfolio module language strings
  *
  * @package    giportfoliotool
  * @subpackage print
+ * @copyright  2020 Pavel E. Timoshenko
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
-defined('MOODLE_INTERNAL') || die();
 
-$string['exportdate'] = 'Exportiert am';
-$string['exportedby'] = 'Exportiert von';
-$string['pluginname'] = 'Portfolio exportieren';
+defined('MOODLE_INTERNAL') || die;
+
+$string['eventchapterprinted'] = 'Раздел портфолио отправлен на печать';
+$string['eventgiportfolioprinted'] = 'Портфолие отправлено напечать';
+$string['pluginname'] = 'Печать портфолио';
+$string['printgiportfolio'] = 'Печать портфолио';
+$string['printchapter'] = 'Печать этого раздела';
+$string['printdate'] = 'Дата';
+$string['printedby'] = 'Напечатано';
+$string['print:print'] = 'Печать портфолио';
