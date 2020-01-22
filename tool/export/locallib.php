@@ -50,7 +50,7 @@ function giportfoliotool_export_get_summary($context, $course, $giportfolio, $us
     $output .= '<table class="giportfolio_summary">';
     $output .= '<tr><td class="fieldname">'.get_string('site').'</td><td class="value">'.$site.'</td></tr>';
     $output .= '<tr><td class="fieldname">'.get_string('course').'</td><td class="value">'.$course->fullname.'</td></tr>';
-    $output .= '<tr><td class="fieldname">'.get_string('modulename', 'mod_giportfolio').'</td><td class="value">'.$giportfolio->name.'</td></tr>';
+    $output .= '<tr><td class="fieldname">'.get_string('modulename', 'giportfolio').'</td><td class="value">'.$giportfolio->name.'</td></tr>';
     $output .= '<tr><td class="fieldname">'.get_string('exportedby', 'giportfoliotool_export').'</td><td class="value">'.fullname($user).'</td></tr>';
     $output .= '<tr><td class="fieldname">'.get_string('exportdate', 'giportfoliotool_export').'</td><td class="value">'.userdate(time()).'</td></tr>';
     $output .= '</table>';
@@ -91,9 +91,9 @@ function giportfoliotool_export_get_toc($chapters, $giportfolio, $cm) {
     $toc .= '<a name="toc"></a>'; // Representation of toc (HTML).
 
     if ($giportfolio->customtitles) {
-        $toc .= '<h1>'.get_string('toc', 'mod_giportfolio').'</h1>';
+        $toc .= '<h1>'.get_string('toc', 'giportfolio').'</h1>';
     } else {
-        $toc .= '<p class="giportfolio_chapter_title">'.get_string('toc', 'mod_giportfolio').'</p>';
+        $toc .= '<p class="giportfolio_chapter_title">'.get_string('toc', 'giportfolio').'</p>';
     }
     $toc .= '<ul>';
     foreach ($chapters as $ch) {
@@ -137,7 +137,7 @@ function giportfoliotool_export_add_filearea_to_zip($zip, $contextid, $filearea,
         $result .= "<li class='file'><a href='$filearea/$filename'>$filename</a></li>";
     }
     if ($result) {
-        $result = '<p>'.get_string('attachment', 'mod_giportfolio').'</p><ul class="file-list">'.$result.'</ul>';
+        $result = '<p>'.get_string('attachment', 'giportfolio').'</p><ul class="file-list">'.$result.'</ul>';
     }
     return $result;
 }

@@ -75,9 +75,9 @@ if ($additionalchapters) {
 }
 // SYNERGY.
 
-$strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
-$strgiportfolio = get_string('modulename', 'mod_giportfolio');
-$strtop = get_string('top', 'mod_giportfolio');
+$strgiportfolios = get_string('modulenameplural', 'giportfolio');
+$strgiportfolio = get_string('modulename', 'giportfolio');
+$strtop = get_string('top', 'giportfolio');
 
 class PORTFOLIOPDF extends pdf {
 
@@ -190,7 +190,7 @@ $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $site, $border = 0, $ln = 
 $pdf->MultiCell(35, 4, get_string('course'), 0, 'L', 0, 0, '', '', true);
 $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $course->fullname, $border = 0, $ln = 1, $fill = 0, $reseth = true,
                     $align = '', $autopadding = true);
-$pdf->MultiCell(35, 4, get_string('modulename', 'mod_giportfolio'), 0, 'L', 0, 0, '', '', true);
+$pdf->MultiCell(35, 4, get_string('modulename', 'giportfolio'), 0, 'L', 0, 0, '', '', true);
 $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $giportfolio->name, $border = 0, $ln = 1, $fill = 0, $reseth = true,
                     $align = '', $autopadding = true);
 $pdf->MultiCell(35, 4, get_string('printedby', 'giportfoliotool_print'), 0, 'L', 0, 0, '', '', true);

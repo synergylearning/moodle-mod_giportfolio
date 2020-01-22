@@ -38,11 +38,11 @@ if ($ADMIN->fulltree) {
     $options = giportfolio_get_numbering_types();
 
     $settings->add(new admin_setting_configmultiselect('giportfolio/numberingoptions',
-        get_string('numberingoptions', 'mod_giportfolio'), get_string('numberingoptions_help', 'mod_giportfolio'),
+        get_string('numberingoptions', 'mod_giportfolio'), get_string('numberingoptions_help', 'giportfolio'),
         array_keys($options), $options));
 
     $settings->add(new admin_setting_configcheckbox('giportfolio/contributioncount',
-                   get_string('contributioncount', 'mod_giportfolio'), get_string('contributioncount_desc', 'mod_giportfolio'), 0));
+                   get_string('contributioncount', 'mod_giportfolio'), get_string('contributioncount_desc', 'giportfolio'), 0));
 
 
     // Modedit defaults.
@@ -50,6 +50,6 @@ if ($ADMIN->fulltree) {
                                              get_string('condifmodeditdefaults', 'admin')));
 
     $settings->add(new admin_setting_configselect('giportfolio/numbering',
-        get_string('numbering', 'mod_giportfolio'), '', PORTFOLIO_NUM_NUMBERS, $options));
+        get_string('numbering', 'giportfolio'), '', PORTFOLIO_NUM_NUMBERS, $options));
 
 }

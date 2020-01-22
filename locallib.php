@@ -283,18 +283,18 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
 
     if ($edit) {
         $toc .= '<div class="giportfolio_faq">';
-        $toc .= $OUTPUT->help_icon('faq', 'mod_giportfolio', get_string('faq', 'mod_giportfolio'));
+        $toc .= $OUTPUT->help_icon('faq', 'mod_giportfolio', get_string('faq', 'giportfolio'));
         $toc .= '</div>';
     }
 
     $bc = new block_contents();
-    $bc->title = get_string('toc', 'mod_giportfolio');
+    $bc->title = get_string('toc', 'giportfolio');
     $bc->attributes['class'] = 'block';
     $bc->content = $toc;
     if ($allowreport && $giportfolio->myactivitylink) {
         $reportlink = new moodle_url('/report/outline/user.php',
                                      array('id' => $USER->id, 'course' => $COURSE->id, 'mode' => 'outline'));
-        $bc->content .= $OUTPUT->single_button($reportlink, get_string('courseoverview', 'mod_giportfolio'), 'get');
+        $bc->content .= $OUTPUT->single_button($reportlink, get_string('courseoverview', 'giportfolio'), 'get');
     }
 
     $regions = $PAGE->blocks->get_regions();
@@ -325,12 +325,12 @@ function giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, 
 
     if ($edit) {
         $toc .= '<div class="giportfolio_faq">';
-        $toc .= $OUTPUT->help_icon('faq', 'mod_giportfolio', get_string('faq', 'mod_giportfolio'));
+        $toc .= $OUTPUT->help_icon('faq', 'mod_giportfolio', get_string('faq', 'giportfolio'));
         $toc .= '</div>';
     }
 
     $bc = new block_contents();
-    $bc->title = get_string('usertoc', 'mod_giportfolio');
+    $bc->title = get_string('usertoc', 'giportfolio');
     $bc->attributes['class'] = 'block';
     $bc->content = $toc;
 
@@ -455,10 +455,10 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
                     <img src="'.$OUTPUT->image_url('t/hide').'" class="iconsmall" alt="'.get_string('hide').'" /></a>';
             }
             // Synergy  only if the giportfolio activity has not yet contributions.
-            $toc .= ' <a title="'.get_string('addafter', 'mod_giportfolio').'" href="edit.php?cmid='.$cm->id.
+            $toc .= ' <a title="'.get_string('addafter', 'giportfolio').'" href="edit.php?cmid='.$cm->id.
                 '&amp;pagenum='.$ch->pagenum.'&amp;subchapter='.$ch->subchapter.'">
                 <img src="'.$OUTPUT->image_url('add', 'mod_giportfolio').'" class="iconsmall" alt="'.
-                get_string('addafter', 'mod_giportfolio').'" /></a>';
+                get_string('addafter', 'giportfolio').'" /></a>';
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = 0;
         }
@@ -655,10 +655,10 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
             if (giportfolio_check_user_chapter($ch, $userid) ||
                 giportfolio_get_last_chapter($giportfolio->id, $ch->id)) {
 
-                $toc .= ' <a title="'.get_string('addafter', 'mod_giportfolio').'" href="editstudent.php?cmid='.$cm->id.
+                $toc .= ' <a title="'.get_string('addafter', 'giportfolio').'" href="editstudent.php?cmid='.$cm->id.
                     '&amp;pagenum='.$ch->pagenum.'&amp;subchapter='.$ch->subchapter.'">
                     <img src="'.$OUTPUT->image_url('add', 'mod_giportfolio').'" class="iconsmall" alt="'.
-                    get_string('addafter', 'mod_giportfolio').'" /></a>';
+                    get_string('addafter', 'giportfolio').'" /></a>';
             }
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = 0;
@@ -966,13 +966,13 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid) {
     }
 
     $bc = new block_contents();
-    $bc->title = get_string('giportfolioof', 'mod_giportfolio');
+    $bc->title = get_string('giportfolioof', 'giportfolio');
     $bc->attributes['class'] = 'block';
     $bc->content = '<strong>'.fullname($user, true).'</strong>';
     $bc->content .= '<br/>';
     $bc->content .= $picture;
     $bc->content .= '<br/>';
-    $bc->content .= '<strong>'.get_string('lastupdated', 'mod_giportfolio').'</strong>';
+    $bc->content .= '<strong>'.get_string('lastupdated', 'giportfolio').'</strong>';
     $bc->content .= '<br/>';
     $bc->content .= $lastupdated;
 
@@ -987,7 +987,7 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid) {
     }
     if (!$gradelocked) {
         $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', array('id' => $cm->id, 'userid' => $userid));
-        $strgrade = $hasgrade ? get_string('upgrade', 'mod_giportfolio') : get_string('insertgrade', 'mod_giportfolio');
+        $strgrade = $hasgrade ? get_string('upgrade', 'mod_giportfolio') : get_string('insertgrade', 'giportfolio');
         $bc->content .= html_writer::link($gradeurl, $strgrade);
     }
     if ($hasgrade) {

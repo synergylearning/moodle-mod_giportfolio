@@ -51,7 +51,7 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         $mform->addElement('select', 'hidden', get_string('visibility', 'giportfolio'), $opts, 0);
         $mform->addHelpButton('hidden', 'visibilityexplain', 'giportfolio');
 
-        $mform->addElement('editor', 'content_editor', get_string('content', 'mod_giportfolio'), null, $editoroptions);
+        $mform->addElement('editor', 'content_editor', get_string('content', 'giportfolio'), null, $editoroptions);
         $mform->addRule('content_editor', get_string('required'), 'required', null, 'client');
 
         $mform->addElement('filemanager', 'attachment_filemanager', get_string('attachment', 'giportfolio'),

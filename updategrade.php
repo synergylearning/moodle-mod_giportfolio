@@ -101,12 +101,12 @@ $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 $realuser = $DB->get_record('user', array('id' => $userid));
-$PAGE->navbar->add(get_string('studentgiportfolio', 'mod_giportfolio'),
+$PAGE->navbar->add(get_string('studentgiportfolio', 'giportfolio'),
                    new moodle_url('submissions.php?=', array('id' => $cm->id)));
 $PAGE->navbar->add(fullname($realuser));
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($giportfolio->name));
-echo $OUTPUT->heading(get_string('giportfolioof', 'mod_giportfolio').' '.fullname($user, true), 3);
+echo $OUTPUT->heading(get_string('giportfolioof', 'giportfolio').' '.fullname($user, true), 3);
 $mform->display();
 echo '<br />';
 echo $OUTPUT->footer();

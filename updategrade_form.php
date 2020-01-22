@@ -45,7 +45,7 @@ class mod_giporotfolio_grading_form extends moodleform {
 
         $mform->addElement('static', 'picture', $OUTPUT->user_picture($user),
                            fullname($user, true).'<br/>'.
-                           get_string('lastupdated', 'mod_giportfolio').date('l jS \of F Y ', $lastupdate)
+                           get_string('lastupdated', 'giportfolio').date('l jS \of F Y ', $lastupdate)
         );
 
         $this->add_grades_section();
@@ -55,8 +55,8 @@ class mod_giporotfolio_grading_form extends moodleform {
 
         if ($dategraded) {
             $datestring = userdate($dategraded)."&nbsp; (".format_time(time() - $dategraded).")";
-            $mform->addElement('header', 'Last Grade', get_string('lastgrade', 'mod_giportfolio'));
-            $mform->addElement('static', 'lastgrade', get_string('lastgrade', 'mod_giportfolio').':', $datestring);
+            $mform->addElement('header', 'Last Grade', get_string('lastgrade', 'giportfolio'));
+            $mform->addElement('static', 'lastgrade', get_string('lastgrade', 'giportfolio').':', $datestring);
         }
         // Buttons.
         $this->add_action_buttons();

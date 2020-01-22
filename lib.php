@@ -32,10 +32,10 @@ function giportfolio_get_numbering_types() {
     require_once(dirname(__FILE__).'/locallib.php');
 
     return array(
-        PORTFOLIO_NUM_NONE => get_string('numbering0', 'mod_giportfolio'),
-        PORTFOLIO_NUM_NUMBERS => get_string('numbering1', 'mod_giportfolio'),
-        PORTFOLIO_NUM_BULLETS => get_string('numbering2', 'mod_giportfolio'),
-        PORTFOLIO_NUM_INDENTED => get_string('numbering3', 'mod_giportfolio')
+        PORTFOLIO_NUM_NONE => get_string('numbering0', 'giportfolio'),
+        PORTFOLIO_NUM_NUMBERS => get_string('numbering1', 'giportfolio'),
+        PORTFOLIO_NUM_BULLETS => get_string('numbering2', 'giportfolio'),
+        PORTFOLIO_NUM_INDENTED => get_string('numbering3', 'giportfolio')
     );
 }
 
@@ -77,8 +77,8 @@ function giportfolio_add_instance($giportfolio, $mform) {
     $giportfolio->id = $DB->insert_record('giportfolio', $giportfolio);
 
     if ($giportfolio) {
-        $chapter_str = get_string('chapter', 'mod_giportfolio');
-        $addcontent_str = get_string('addcontent', 'mod_giportfolio');
+        $chapter_str = get_string('chapter', 'giportfolio');
+        $addcontent_str = get_string('addcontent', 'giportfolio');
         
         for ($ch = 0; $ch < $giportfolio->chapternumber; $ch++) {
             $initchapter = new stdClass();
@@ -521,7 +521,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     if (!empty($params['id']) and !empty($params['chapterid']) and
         has_capability('mod/giportfolio:viewgiportfolios', $context)) {
 
-        $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio');
+        $gradeconsole = get_string('studentgiportfolio', 'giportfolio');
         $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id']));
         $giportfolionode->add($gradeconsole, $url, navigation_node::TYPE_SETTING, null, null,
                               new pix_icon('console', '', 'giportfoliotool_print', array('class' => 'icon')));
@@ -539,15 +539,15 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
                 'id' => $params['id'], 'sesskey' => sesskey()
             )); // Add pdf export link.
             // Open as new window.
-            $action = new action_link($url, get_string('exportpdf', 'mod_giportfolio'), new popup_action('click', $url));
-            $giportfolionode->add(get_string('exportpdf', 'mod_giportfolio'), $action, navigation_node::TYPE_SETTING, null, null,
+            $action = new action_link($url, get_string('exportpdf', 'giportfolio'), new popup_action('click', $url));
+            $giportfolionode->add(get_string('exportpdf', 'giportfolio'), $action, navigation_node::TYPE_SETTING, null, null,
                                   new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon')));
 
             // SYNERGY LEARNING - Export as zip option.
             $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array(
                 'id' => $params['id']
             )); // Add zip export link.
-            $giportfolionode->add(get_string('exportzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null,
+            $giportfolionode->add(get_string('exportzip', 'giportfolio'), $url, navigation_node::TYPE_SETTING, null, null,
                                   new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
             // END SYNERGY LEARNING - Export as zip option.
         }
@@ -560,10 +560,10 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
         $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
         if (!empty($useredit)) {
-            $tocedit = get_string('stopedit', 'mod_giportfolio');
+            $tocedit = get_string('stopedit', 'giportfolio');
             $edit = '0';
         } else {
-            $tocedit = get_string('edityourchapters', 'mod_giportfolio');
+            $tocedit = get_string('edityourchapters', 'giportfolio');
             $edit = '1';
         }
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
@@ -664,9 +664,9 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
  */
 function giportfolio_get_file_areas($course, $cm, $context) {
     $areas = array();
-    $areas['chapter'] = get_string('chapters', 'mod_giportfolio');
-    $areas['contribution'] = get_string('contributions', 'mod_giportfolio');
-    $areas['attachment'] = get_string('attachment', 'mod_giportfolio');
+    $areas['chapter'] = get_string('chapters', 'giportfolio');
+    $areas['contribution'] = get_string('contributions', 'giportfolio');
+    $areas['attachment'] = get_string('attachment', 'giportfolio');
     return $areas;
 }
 
@@ -822,7 +822,7 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
  * @return array
  */
 function giportfolio_page_type_list($pagetype, $parentcontext, $currentcontext) {
-    $modulepagetype = array('mod-giportfolio-*' => get_string('page-mod-giportfolio-x', 'mod_giportfolio'));
+    $modulepagetype = array('mod-giportfolio-*' => get_string('page-mod-giportfolio-x', 'giportfolio'));
     return $modulepagetype;
 }
 
@@ -901,7 +901,7 @@ function mod_giportfolio_cm_info_view(cm_info $cm) {
     }
 
     $count = $DB->count_records('giportfolio_contributions', array('giportfolioid' => $cm->instance, 'userid' => $USER->id));
-    $count = get_string('contributions', 'mod_giportfolio').' '.html_writer::tag('span', $count, array('class' => 'count-inner'));
+    $count = get_string('contributions', 'giportfolio').' '.html_writer::tag('span', $count, array('class' => 'count-inner'));
     $count = html_writer::tag('span', $count, array('class' => 'giportfolio-count'));
     $cm->set_after_link($count);
 }

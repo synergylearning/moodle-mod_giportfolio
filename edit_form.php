@@ -37,13 +37,13 @@ class giportfolio_chapter_edit_form extends moodleform {
 
         $mform->addElement('header', 'general', get_string('edit'));
 
-        $mform->addElement('text', 'title', get_string('chaptertitle', 'mod_giportfolio'), array('size' => '30'));
+        $mform->addElement('text', 'title', get_string('chaptertitle', 'giportfolio'), array('size' => '30'));
         $mform->setType('title', PARAM_RAW);
         $mform->addRule('title', null, 'required', null, 'client');
 
-        $mform->addElement('advcheckbox', 'subchapter', get_string('subchapter', 'mod_giportfolio'));
+        $mform->addElement('advcheckbox', 'subchapter', get_string('subchapter', 'giportfolio'));
 
-        $mform->addElement('editor', 'content_editor', get_string('content', 'mod_giportfolio'), null, $options);
+        $mform->addElement('editor', 'content_editor', get_string('content', 'giportfolio'), null, $options);
         $mform->setType('content_editor', PARAM_RAW);
         $mform->addRule('content_editor', get_string('required'), 'required', null, 'client');
 

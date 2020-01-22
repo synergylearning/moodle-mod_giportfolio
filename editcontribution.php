@@ -126,7 +126,7 @@ if ($action) {
 
         } else {
             $title = format_string($contribution->title);
-            $msg = get_string('confcontribdelete', 'mod_giportfolio');
+            $msg = get_string('confcontribdelete', 'giportfolio');
             $msg = "<strong>{$title}</strong><p>$msg</p>";
             $continue = new moodle_url($PAGE->url, array('confirm' => 1, 'sesskey' => sesskey()));
 

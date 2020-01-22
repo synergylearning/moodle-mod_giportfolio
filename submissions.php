@@ -62,15 +62,15 @@ $allurl->remove_params('tab');
 $sincelastloginurl = new moodle_url($PAGE->url, array('tab' => 'sincelastlogin'));
 $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $tabs = array(
-    new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio')),
-    new tabobject('sincelastlogin', $sincelastloginurl, get_string('sincelastlogin', 'mod_giportfolio')),
-    new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
+    new tabobject('all', $allurl, get_string('allusers', 'giportfolio')),
+    new tabobject('sincelastlogin', $sincelastloginurl, get_string('sincelastlogin', 'giportfolio')),
+    new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'giportfolio')),
 );
 
-echo get_string('studentgiportfolios', 'mod_giportfolio');
+echo get_string('studentgiportfolios', 'giportfolio');
 echo '</br>';
 echo $OUTPUT->tabtree($tabs, $currenttab);
-echo get_string('filterlist', 'mod_giportfolio');
+echo get_string('filterlist', 'giportfolio');
 
 $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
 
@@ -97,7 +97,7 @@ $quickgrade = get_user_preferences('giportfolio_quickgrade', 0);
 $filter = get_user_preferences('giportfoliot_filter', 0);
 
 $page = optional_param('page', 0, PARAM_INT);
-$strsaveallfeedback = get_string('saveallfeedback', 'mod_giportfolio');
+$strsaveallfeedback = get_string('saveallfeedback', 'giportfolio');
 $fastg = optional_param('fastg', 0, PARAM_BOOL);
 if ($fastg) { // Update the grade and the feedback.
     if (isset($_POST["menu"])) {
@@ -250,8 +250,8 @@ if (!empty($allusers)) {
     $currentposition = 0;
 
     $strview = get_string('view');
-    $strnotstarted = get_string('notstarted', 'mod_giportfolio');
-    $strprivate = get_string('private', 'mod_giportfolio');
+    $strnotstarted = get_string('notstarted', 'giportfolio');
+    $strprivate = get_string('private', 'giportfolio');
     $strgrade = get_string('grade');
 
     foreach ($pusers as $puser) {
@@ -331,7 +331,7 @@ if (!empty($allusers)) {
     }
     $table->print_html();
 } else {
-    echo html_writer::tag('div', get_string('nosubmisson', 'mod_giportfolio'), array('class' => 'nosubmisson'));
+    echo html_writer::tag('div', get_string('nosubmisson', 'giportfolio'), array('class' => 'nosubmisson'));
 }
 // End table.
 // Print quickgrade form around the table.
@@ -339,7 +339,7 @@ if ($quickgrade && $table->started_output && !empty($allusers)) {
 
     $savefeedback = html_writer::empty_tag('input', array(
                                                          'type' => 'submit', 'name' => 'fastg',
-                                                         'value' => get_string('saveallfeedback', 'mod_giportfolio')
+                                                         'value' => get_string('saveallfeedback', 'giportfolio')
                                                     ));
     echo html_writer::tag('div', $savefeedback, array('class' => 'fastgbutton'));
 

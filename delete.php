@@ -88,10 +88,10 @@ echo $OUTPUT->heading(format_string($giportfolio->name));
 
 // The operation has not been confirmed yet so ask the user to do so.
 if ($chapter->subchapter) {
-    $strconfirm = get_string('confchapterdelete', 'mod_giportfolio');
+    $strconfirm = get_string('confchapterdelete', 'giportfolio');
     $warnstrname = 'deletecontribwarning';
 } else {
-    $strconfirm = get_string('confchapterdeleteall', 'mod_giportfolio');
+    $strconfirm = get_string('confchapterdeleteall', 'giportfolio');
     $warnstrname = 'deletecontribwarningsub';
 }
 $contribwarning = '';

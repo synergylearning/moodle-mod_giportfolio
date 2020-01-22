@@ -72,9 +72,9 @@ if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
 
-$strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
-$strgiportfolio = get_string('modulename', 'mod_giportfolio');
-$strtop = get_string('top', 'mod_giportfolio');
+$strgiportfolios = get_string('modulenameplural', 'giportfolio');
+$strgiportfolio = get_string('modulename', 'giportfolio');
+$strtop = get_string('top', 'giportfolio');
 
 @header('Cache-Control: private, pre-check=0, post-check=0, max-age=0');
 @header('Pragma: no-cache');
@@ -187,7 +187,7 @@ if ($chapter) {
             <td><?php echo format_string($course->fullname, true, array('context' => $context)) ?></td>
         </tr>
         <tr>
-            <td><?php echo get_string('modulename', 'mod_giportfolio') ?>:</td>
+            <td><?php echo get_string('modulename', 'giportfolio') ?>:</td>
             <td><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></td>
         </tr>
         <tr>

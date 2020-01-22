@@ -83,9 +83,9 @@ echo $OUTPUT->heading(format_string($giportfolio->name));
 
 // The operation has not been confirmed yet so ask the user to do so.
 if ($chapter->subchapter) {
-    $strconfirm = get_string('confchapterdelete', 'mod_giportfolio');
+    $strconfirm = get_string('confchapterdelete', 'giportfolio');
 } else {
-    $strconfirm = get_string('confchapterdeleteall', 'mod_giportfolio');
+    $strconfirm = get_string('confchapterdeleteall', 'giportfolio');
 }
 echo '<br />';
 $continue = new moodle_url('/mod/giportfolio/deleteuserchapter.php', array(

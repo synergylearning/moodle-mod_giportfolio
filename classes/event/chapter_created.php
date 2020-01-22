@@ -79,7 +79,7 @@ class chapter_created extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventchaptercreated', 'mod_giportfolio');
+        return get_string('eventchaptercreated', 'giportfolio');
     }
 
     /**

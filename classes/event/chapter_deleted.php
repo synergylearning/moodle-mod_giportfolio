@@ -79,7 +79,7 @@ class chapter_deleted extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventchapterdeleted', 'mod_giportfolio');
+        return get_string('eventchapterdeleted', 'giportfolio');
     }
 
     /**

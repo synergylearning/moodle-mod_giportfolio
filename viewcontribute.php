@@ -108,9 +108,9 @@ unset($chapterid);
 \mod_giportfolio\event\chapter_viewed::create_from_chapter($giportfolio, $context, $chapter);
 
 // Read standard strings.
-$strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
-$strgiportfolio = get_string('modulename', 'mod_giportfolio');
-$strtoc = get_string('toc', 'mod_giportfolio');
+$strgiportfolios = get_string('modulenameplural', 'giportfolio');
+$strgiportfolio = get_string('modulename', 'giportfolio');
+$strtoc = get_string('toc', 'giportfolio');
 
 // Prepare header.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -174,7 +174,7 @@ if ($nextid) {
 // Giportfolio display HTML code.
 
 $realuser = $DB->get_record('user', array('id' => $userid));
-$PAGE->navbar->add(get_string('studentgiportfolio', 'mod_giportfolio'),
+$PAGE->navbar->add(get_string('studentgiportfolio', 'giportfolio'),
                    new moodle_url('submissions.php?=', array('id' => $cm->id)));
 $PAGE->navbar->add(fullname($realuser));
 
@@ -226,7 +226,7 @@ if ($contriblist) {
             echo '<strong>'.$contribtitle.'</strong></br>';
             echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
             if ($contrib->timecreated !== $contrib->timemodified) {
-                echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
+                echo '<br/><i>'.get_string('lastmodified', 'giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
             }
             echo '</br></br>';
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',

@@ -135,9 +135,9 @@ unset($chapterid);
 \mod_giportfolio\event\chapter_viewed::create_from_chapter($giportfolio, $context, $chapter);
 
 // Read standard strings.
-$strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
-$strgiportfolio = get_string('modulename', 'mod_giportfolio');
-$strtoc = get_string('toc', 'mod_giportfolio');
+$strgiportfolios = get_string('modulenameplural', 'giportfolio');
+$strgiportfolio = get_string('modulename', 'giportfolio');
+$strtoc = get_string('toc', 'giportfolio');
 
 // Prepare header.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -213,11 +213,11 @@ if (has_capability('giportfoliotool/print:print', $context)) {
 if (has_capability('mod/giportfolio:viewgiportfolios', $context)) {
     // Grading link.
     $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id));
-    $extralinks .= html_writer::link($url, get_string('studentgiportfolio', 'mod_giportfolio'));
+    $extralinks .= html_writer::link($url, get_string('studentgiportfolio', 'giportfolio'));
     $extralinks .= html_writer::empty_tag('br');
 }
 $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $cm->id));
-$extralinks .= html_writer::link($url, get_string('exportzip', 'mod_giportfolio'));
+$extralinks .= html_writer::link($url, get_string('exportzip', 'giportfolio'));
 $extralinks = html_writer::div($extralinks, 'mod_giportfolio-extralinks');
 
 
@@ -254,17 +254,17 @@ echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true,
 echo '</br>';
 if (!$allowedit) {
     $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
-    echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
+    echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'giportfolio'), 'GET');
 }
 if (!$isuserchapter && $giportfolio->peersharing) {
     // If this is not a user chapter, display a button to show/hide other users' shared contributions,
     // as long as peersharing is enabled.
     if ($showshared) {
         $hidesharedurl = new moodle_url($PAGE->url, array('showshared' => 0));
-        echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio'), 'GET');
+        echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'giportfolio'), 'GET');
     } else {
         $showsharedurl = new moodle_url($PAGE->url, array('showshared' => 1));
-        echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'mod_giportfolio'), 'GET');
+        echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'giportfolio'), 'GET');
     }
 }
 echo '<br><br>';
@@ -286,7 +286,7 @@ if ($showshared) {
             $otherusers[$user->id] = html_writer::link($profile, $fullname);
         }
     } else {
-        echo html_writer::tag('p', get_string('noshared', 'mod_giportfolio'));
+        echo html_writer::tag('p', get_string('noshared', 'giportfolio'));
     }
 }
 
@@ -326,10 +326,10 @@ if ($contriblist) {
 
             if ($contrib->hidden) {
                 $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'mod_giportfolio'));
+                $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'giportfolio'));
             } else {
                 $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
+                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'giportfolio'));
             }
             $showicon = html_writer::link($showurl, $showicon);
 
@@ -337,10 +337,10 @@ if ($contriblist) {
             if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
                 if ($contrib->shared) {
                     $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
-                    $shareicon = $OUTPUT->pix_icon('unshare', get_string('unshare', 'mod_giportfolio'), 'mod_giportfolio');
+                    $shareicon = $OUTPUT->pix_icon('unshare', get_string('unshare', 'giportfolio'), 'mod_giportfolio');
                 } else {
                     $shareurl = new moodle_url($baseurl, array('action' => 'share', 'sesskey' => sesskey()));
-                    $shareicon = $OUTPUT->pix_icon('share', get_string('share', 'mod_giportfolio'), 'mod_giportfolio');
+                    $shareicon = $OUTPUT->pix_icon('share', get_string('share', 'giportfolio'), 'mod_giportfolio');
                 }
                 $shareicon = html_writer::link($shareurl, $shareicon);
             }
@@ -358,7 +358,7 @@ if ($contriblist) {
         $cout .= $userfullname.'<strong>'.format_string($contrib->title).'</strong>  '.implode(' ', $actions).'<br>';
         $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' \a\t h:i A' : ''), $contrib->timecreated);
         if($contrib->timecreated !== $contrib->timemodified) {
-        	$cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
+        	$cout .= '<br/><i>'.get_string('lastmodified', 'giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
         }
         
         $cout .= '<br><br>';

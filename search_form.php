@@ -32,7 +32,7 @@ class giportfolio_search_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        $mform->addElement('text', 'username', get_string('name', 'mod_giportfolio'), array('size' => '30'));
+        $mform->addElement('text', 'username', get_string('name', 'giportfolio'), array('size' => '30'));
         $mform->setType('username', PARAM_TEXT);
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
