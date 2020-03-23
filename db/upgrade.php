@@ -530,6 +530,20 @@ function xmldb_giportfolio_upgrade($oldversion) {
     	upgrade_mod_savepoint(true, 2019061500, 'giportfolio');
     }
     
+    if ($oldversion < 2020032200) {
+        
+        // Define field peersharing to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $displayoutline_field = new xmldb_field('displayoutline', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
+        
+        // Conditionally launch add field displayoutline.
+        if (!$dbman->field_exists($table, $displayoutline_field)) {
+            $dbman->add_field($table, $displayoutline_field);
+        }
+        
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2020032200, 'giportfolio');
+    }
     
     return true;
 }

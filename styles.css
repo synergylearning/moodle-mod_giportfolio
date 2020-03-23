@@ -166,6 +166,53 @@ body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
     text-align: right;
 }
 
+p.giportfolio_outline {
+	font-weight: bold;
+	font-size: large;
+}
+
+.path-mod-giportfolio span.toggleoutline {
+	cursor: pointer;
+	font-size: x-small;
+	font-weight: normal;
+}
+
+.path-mod-giportfolio td.contribdate {
+	padding-left: 10px;
+}
+
+.path-mod-giportfolio span.timemodified {
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+	border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.path-mod-giportfolio span.timemodified_details {
+	visibility: hidden;
+	width: 240px;
+	background-color: #fffbc9;
+	text-align: center;
+	padding: 5px 5px;
+	border-radius: 6px;
+	
+	/* Position the tooltip text - see examples below! */
+	position: absolute;
+	z-index: 1;
+	top: -5px;
+	left: 105%;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.path-mod-giportfolio span.timemodified:hover span.timemodified_details {
+	visibility: visible;
+}
+
+.path-mod-giportfolio tr.notmine {
+	background-color: #EEF0F1;
+}
+
 .path-mod-giportfolio article.giportfolio-contribution.notmine {
     background-color: #EEF0F1;
     color: #555;
