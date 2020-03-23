@@ -140,11 +140,12 @@ $strgiportfolio = get_string('modulename', 'mod_giportfolio');
 $strtoc = get_string('toc', 'mod_giportfolio');
 
 // Prepare header.
+$PAGE->requires->jquery();
 $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
-// Synergy add $userdit.
+// Synergy add $useredit.
 giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $useredit);
 
 // Prepare chapter navigation icons.
@@ -251,26 +252,14 @@ $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giport
 $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                             'chapter', $chapter->id);
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
-echo '</br>';
+
+echo $OUTPUT->box_start('giportfolio_actions');
 if (!$allowedit) {
     $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
     echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
 }
-if (!$isuserchapter && $giportfolio->peersharing) {
-    // If this is not a user chapter, display a button to show/hide other users' shared contributions,
-    // as long as peersharing is enabled.
-    if ($showshared) {
-        $hidesharedurl = new moodle_url($PAGE->url, array('showshared' => 0));
-        echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio'), 'GET');
-    } else {
-        $showsharedurl = new moodle_url($PAGE->url, array('showshared' => 1));
-        echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'mod_giportfolio'), 'GET');
-    }
-}
-echo '<br><br>';
-
 $otherusers = array();
-if ($showshared) {
+if ($giportfolio->peersharing && $showshared) {
     $userids = array();
     foreach ($contriblist as $contrib) {
         if ($contrib->userid != $USER->id) {
@@ -290,12 +279,42 @@ if ($showshared) {
     }
 }
 
+if (!$isuserchapter && $giportfolio->peersharing) {
+    // If this is not a user chapter, display a button to show/hide other users' shared contributions,
+    // as long as peersharing is enabled.
+    if ($showshared) {
+        $hidesharedurl = new moodle_url($PAGE->url, array('showshared' => 0));
+        echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio'), 'GET');
+    } else {
+        $showsharedurl = new moodle_url($PAGE->url, array('showshared' => 1));
+        echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'mod_giportfolio'), 'GET');
+    }
+}
+echo $OUTPUT->box_end(); // giportfolio_actions
+
 // Output the 'class plan' content.
 if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()) {
+    echo $OUTPUT->box_start('giportfolio_klassenbuchtrainer');
     echo klassenbuchtool_lernschritte_get_subcontent($chapter->id, $context, 'giportfolio');
+    echo $OUTPUT->box_end(); // giportfolio_klassenbuchtrainer
 }
 
+
 if ($contriblist) {
+    echo $OUTPUT->box_start('giportfolio_contributions');
+    
+    $contribution_buffer = '';
+    $contribution_outline = '';
+    if($giportfolio->displayoutline) {
+        $PAGE->requires->js( new moodle_url($CFG->wwwroot.'/mod/giportfolio/outline.js'));
+        $contribution_outline = '<p class="giportfolio_outline">'.get_string('outline', 'mod_giportfolio')
+            .' <span id="toggleoutline" class="toggleoutline">[ '
+                .'<span id="togglehide">'.get_string('outline_hide', 'mod_giportfolio').'</span>'
+                .'<span id="toggleshow">'.get_string('outline_show', 'mod_giportfolio').'</span> ]'
+            .'</span></p><table id="giportfolio_outline" class="contents">';
+    }
+    $contribution_count = 0;
+    
     comment::init();
     $commentopts = (object)array(
         'context' => $context,
@@ -353,43 +372,69 @@ if ($contriblist) {
         	// Do not show contribution if peersharing is disabled, even if the contribution was previously shared
         	continue;
         }
-        
+
         $cout = '';
         $cout .= $userfullname.'<strong>'.format_string($contrib->title).'</strong>  '.implode(' ', $actions).'<br>';
-        $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' \a\t h:i A' : ''), $contrib->timecreated);
+        $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
         if($contrib->timecreated !== $contrib->timemodified) {
         	$cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
         }
+        $cout .= '<br/><br/>';
         
-        $cout .= '<br><br>';
+        $cout = html_writer::tag('contribheader', $cout);
         $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                     'contribution', $contrib->id);
 
-        $cout .= format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
+        $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
 
-        $cout .= '<br>';
         $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
         if ($files) {
             $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
             $cout .= $files;
             $cout .= "</td></tr></table>\n";
+            $cout .= '<br>';
         }
-        $cout .= '<br>';
 
         if ($ismine) {
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
-            $cout .= $commentbox->output();
+            $cout .= html_writer::tag('contribcomment', $commentbox->output());
             $cout .= '<br>';
         }
 
+        $contribution_count++;
+        
         $class = 'giportfolio-contribution';
         $class .= $ismine ? ' mine' : ' notmine';
-        echo html_writer::tag('article', $cout, array('class' => $class));
+        $contribution_buffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution'.$contribution_count));
+        
+        if($giportfolio->displayoutline) {
+            
+            $date_display = date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+            if($contrib->timecreated !== $contrib->timemodified) {
+                $date_display .= '&nbsp;<span class="timemodified">&raquo;<span class="timemodified_details">'
+                    .get_string('lastmodified', 'mod_giportfolio').'<br/>'
+                    .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
+                .'</span></span>';
+            }
+            
+            $contribution_outline .= html_writer::tag('tr',
+                '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
+                '<td class="contribdate">'.$date_display.'</td>',
+                array('class' => ($ismine ? 'mine' : 'notmine'))
+            );
+        }
     }
+    
+    if($giportfolio->displayoutline) {
+        echo $contribution_outline.'</table><br/>';
+    }
+    echo $contribution_buffer;
+    echo $OUTPUT->box_end();
 }
+
 // SYNERGY.
-echo $OUTPUT->box_end();
+echo $OUTPUT->box_end(); // giportfolio_content
 echo '<br>';
 // Lower navigation.
 echo '<div class="navbottom">'.$chnavigation.'</div>';

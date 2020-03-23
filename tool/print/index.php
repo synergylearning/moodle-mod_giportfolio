@@ -125,8 +125,10 @@ if ($chapter) {
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                          'contribution', $contrib->id);
             echo '<strong>'.$contribtitle.'</strong></br>';
-            echo date('l jS F Y', $contrib->timemodified);
-            echo '</br></br>';
+            echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+            if ($contrib->timecreated !== $contrib->timemodified) {
+                echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
+            }
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
             echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
@@ -227,7 +229,10 @@ if ($chapter) {
                 $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                              'contribution', $contrib->id);
                 echo '<strong>'.$contribtitle.'</strong></br>';
-                echo date('l jS F Y', $contrib->timemodified);
+                echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+                if ($contrib->timecreated !== $contrib->timemodified) {
+                    echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
+                }
                 echo '</br></br>';
                 $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                             'contribution', $contrib->id);

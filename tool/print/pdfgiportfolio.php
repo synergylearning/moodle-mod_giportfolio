@@ -128,9 +128,9 @@ if (file_exists($pdfdetailsfile)) {
 // Set document information.
 //$pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor($pdfauthorname);
-$pdf->SetTitle('Export Quiz Report');
-$pdf->SetSubject('Export Quiz Report');
-$pdf->SetKeywords('Export Quiz Reporte');
+$pdf->SetTitle('Export Portfolio');
+$pdf->SetSubject('Export  Portfolio');
+$pdf->SetKeywords('Export Export Portfolio');
 
 // Set default header data.
 //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 001', PDF_HEADER_STRING);
@@ -234,8 +234,12 @@ foreach ($chapters as $ch) {
                                                          'chapter', $contrib->chapterid);
             $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', '<strong>'.$contribtitle.'</strong></br>', $border = 0, $ln = 1,
                                 $fill = 0, $reseth = true, $align = '', $autopadding = true);
-            $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', date('l jS F Y', $contrib->timemodified), $border = 0, $ln = 1,
+            $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated), $border = 0, $ln = 1,
                                 $fill = 0, $reseth = true, $align = '', $autopadding = true);
+            if ($contrib->timecreated !== $contrib->timemodified) {
+                $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', '<i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>', $border = 0, $ln = 1,
+                    $fill = 0, $reseth = true, $align = '', $autopadding = true);
+            }
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
             $contribtext = pdfgiportfolio_fix_image_links($contribtext);

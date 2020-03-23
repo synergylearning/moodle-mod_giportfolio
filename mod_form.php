@@ -91,6 +91,11 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'timeofday', get_string('showtimeofday', 'giportfolio'));
         $mform->setDefault('timeofday', 0);
         
+        // add display outline option to settings
+        $mform->addElement('selectyesno', 'displayoutline', get_string('displayoutline', 'giportfolio'));
+        $mform->addHelpButton('displayoutline', 'displayoutline', 'mod_giportfolio');
+        $mform->setDefault('displayoutline', 1);
+        
         $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'giportfolio'));
         $mform->setDefault('participantadd', 1);
 

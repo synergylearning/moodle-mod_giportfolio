@@ -113,6 +113,7 @@ $strgiportfolio = get_string('modulename', 'mod_giportfolio');
 $strtoc = get_string('toc', 'mod_giportfolio');
 
 // Prepare header.
+$PAGE->requires->jquery();
 $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
@@ -205,6 +206,21 @@ $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php',
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
 if ($contriblist) {
+    echo $OUTPUT->box_start('giportfolio_contributions');
+    
+    $contribution_buffer = '';
+    $contribution_outline = '';
+    if($giportfolio->displayoutline) {
+        $PAGE->requires->js( new moodle_url($CFG->wwwroot.'/mod/giportfolio/outline.js'));
+        $contribution_outline = '<p class="giportfolio_outline">'.get_string('outline', 'mod_giportfolio')
+            .' <span id="toggleoutline" class="toggleoutline">[ '
+                .'<span id="togglehide">'.get_string('outline_hide', 'mod_giportfolio').'</span>'
+                .'<span id="toggleshow">'.get_string('outline_show', 'mod_giportfolio').'</span> ]'
+            .'</span></p><table id="giportfolio_outline" class="contents">';
+    }
+    
+    $contribution_count = 0;
+    
     comment::init();
     $commentopts = (object)array(
         'context' => $context,
@@ -220,34 +236,61 @@ if ($contriblist) {
     $align = 'right';
     foreach ($contriblist as $contrib) {
         if (!$contrib->hidden) {
-			echo $OUTPUT->box_start('giportfolio-contribution');
+            $cout = '';
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                          'contribution', $contrib->id);
-            echo '<strong>'.$contribtitle.'</strong></br>';
-            echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+            $cout .='<strong>'.$contribtitle.'</strong></br>';
+            $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
             if ($contrib->timecreated !== $contrib->timemodified) {
-                echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
+                $cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
             }
-            echo '</br></br>';
+            $cout .= '<br/><br/>';
+            $cout = html_writer::tag('contribheader', $cout);
+
+            // Print contribution body
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
-            echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
-
-            echo '</br>';
+            $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
+            
             $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
             if ($files) {
-                echo "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
-                echo $files;
-                echo "</td></tr></table>\n";
+                $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
+                $cout .= $files;
+                $cout .= "</td></tr></table>\n";
+                $cout .= '</br>';
             }
-            echo '</br>';
 
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
-            echo $commentbox->output();
-            echo $OUTPUT->box_end();
+            $cout .= html_writer::tag('contribcomment', $commentbox->output());
+
+            // Wrap contribution and make entry in the contents
+            $contribution_count++;
+            $contribution_buffer .= html_writer::tag('article', $cout, array('class' => 'giportfolio-contribution', 'id' => 'contribution'.$contribution_count));
+
+            if($giportfolio->displayoutline) {
+                $date_display = date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+                if($contrib->timecreated !== $contrib->timemodified) {
+                    $date_display .= '&nbsp;<span class="timemodified">&raquo;<span class="timemodified_details">'
+                        .get_string('lastmodified', 'mod_giportfolio').'<br/>'
+                        .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
+                   .'</span></span>';
+                }
+                
+                $contribution_outline .= html_writer::tag('tr',
+                    '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
+                    '<td class="contribdate">'.$date_display.'</td>',
+                    array('class' => ($ismine ? 'mine' : 'notmine'))
+                );
+            }
         }
     }
+    
+    if($giportfolio->displayoutline) {
+        echo $contribution_outline.'</table><br/>';
+    }
+    echo $contribution_buffer;
+    echo $OUTPUT->box_end(); // giportfolio_contributions
 }
 
 echo $OUTPUT->box_end();
