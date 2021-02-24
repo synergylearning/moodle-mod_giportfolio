@@ -58,6 +58,7 @@ class restore_giportfolio_activity_structure_step extends restore_activity_struc
         $data = (object)$data;
         $oldid = $data->id;
         $data->course = $this->get_courseid();
+        $data->userid = $this->get_mappingid('user', $data->userid);
 
         $data->giportfolioid = $this->get_new_parentid('giportfolio');
 
@@ -77,6 +78,7 @@ class restore_giportfolio_activity_structure_step extends restore_activity_struc
         $data->giportfolioid = $this->get_new_parentid('giportfolio');
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->timecreated = time();
+        $data->userid = $this->get_mappingid('user', $data->userid);
         $newitemid = $DB->insert_record('giportfolio_contributions', $data);
         $this->set_mapping('giportfolio_contribution', $oldid, $newitemid, true);
     }

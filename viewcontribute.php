@@ -206,8 +206,9 @@ $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php',
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
 if ($contriblist) {
+    $ismine = ($userid == $USER->id);
     echo $OUTPUT->box_start('giportfolio_contributions');
-    
+
     $contribution_buffer = '';
     $contribution_outline = '';
     if($giportfolio->displayoutline) {
@@ -218,9 +219,9 @@ if ($contriblist) {
                 .'<span id="toggleshow">'.get_string('outline_show', 'mod_giportfolio').'</span> ]'
             .'</span></p><table id="giportfolio_outline" class="contents">';
     }
-    
+
     $contribution_count = 0;
-    
+
     comment::init();
     $commentopts = (object)array(
         'context' => $context,
@@ -251,7 +252,7 @@ if ($contriblist) {
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
             $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
-            
+
             $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
             if ($files) {
                 $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
@@ -276,7 +277,7 @@ if ($contriblist) {
                         .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
                    .'</span></span>';
                 }
-                
+
                 $contribution_outline .= html_writer::tag('tr',
                     '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
                     '<td class="contribdate">'.$date_display.'</td>',
@@ -285,7 +286,7 @@ if ($contriblist) {
             }
         }
     }
-    
+
     if($giportfolio->displayoutline) {
         echo $contribution_outline.'</table><br/>';
     }

@@ -71,6 +71,12 @@ class backup_giportfolio_activity_structure_step extends backup_activity_structu
 
         $contribution->annotate_files('mod_giportfolio', 'attachment', 'id');
 
+        // Annotate fields.
+        if ($userinfo) {
+            $chapter->annotate_ids('user', 'userid');
+            $contribution->annotate_ids('user', 'userid');
+        }
+
         // Return the root element (giportfolio), wrapped into standard activity structure.
         return $this->prepare_activity_structure($giportfolio);
     }
