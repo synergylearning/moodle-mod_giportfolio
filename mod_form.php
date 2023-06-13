@@ -105,7 +105,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->setType('chapternumber', PARAM_INT);
         $mform->addRule('chapternumber', 'must be numeric', 'numeric', null, 'client');
         $mform->addRule('chapternumber', 'add valid number', 'nonzero', null, 'client');
-        $mform->addRule('chapternumber', 'add positive number', 'regex', '|^[1-9][0-9]*$|', 'client'); // Positive number.
+        $mform->addRule('chapternumber', 'add positive number', 'regex', '/^[1-9][0-9]*$/', 'client'); // Positive number.
 
         $mform->addElement('checkbox', 'publishnotification', get_string('publishnotification', 'giportfolio'));
         $mform->setDefault('publishnotification', 0);
