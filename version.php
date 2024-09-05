@@ -24,9 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2020032200; // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2017051500; // Requires this Moodle version (2.7).
-$plugin->cron      = 0;          // Period for cron to check this module (secs).
+$plugin->version   = 2024090500; // The current module version (Date: YYYYMMDDXX).
+$plugin->requires  = 2023100900; // Requires this Moodle version (4.3).
 $plugin->component = 'mod_giportfolio'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.3+ (2020032200)"; // User-friendly version number.
+$plugin->release   = "4.3 (2024090500)"; // User-friendly version number.
