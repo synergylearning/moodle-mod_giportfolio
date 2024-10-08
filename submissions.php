@@ -140,13 +140,21 @@ foreach ($allusers as $user) {
 $listusersids = "'".implode("', '", $alluserids)."'";
 // Generate table.
 
-$extrafields = get_extra_user_fields($context);
+if (class_exists(\core_user\fields::class)) {
+    $extrafields = \core_user\fields::get_identity_fields($context);
+} else {
+    $extrafields = get_extra_user_fields($context);
+}
 $tablecolumns = array_merge(array('picture', 'fullname'), $extrafields,
                             array('lastupdate', 'viewgiportfolio', 'grade', 'feedback'));
 
 $extrafieldnames = array();
 foreach ($extrafields as $field) {
-    $extrafieldnames[] = get_user_field_name($field);
+    if (class_exists(\core_user\fields::class)) {
+        $extrafieldnames[] = \core_user\fields::get_display_name($field);
+    } else {
+        $extrafieldnames[] = get_user_field_name($field);
+    }
 }
 $tableheaders = array_merge(
     array('', get_string('fullnameuser')),
